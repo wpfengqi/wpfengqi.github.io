@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="推荐," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta name="keywords" content="推荐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统初探（转+原）">
+<meta property="og:url" content="http://wpfengqi.github.io.git/2017/07/23/Recommand System/index.html">
+<meta property="og:site_name" content="Mr.PanPan">
+<meta property="og:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxt.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtyl.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtc.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtxu.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtxi.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtcmp.png">
+<meta property="og:updated_time" content="2017-07-24T09:23:17.595Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="推荐系统初探（转+原）">
+<meta name="twitter:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta name="twitter:image" content="http://wpfengqi.github.io.git/images/tjxt.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wpfengqi.github.io.git/2017/07/23/Recommand System/"/>
+
+
+
+
+
+  <title>推荐系统初探（转+原） | Mr.PanPan</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.PanPan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand System/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Pan Wang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/tx.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.PanPan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">推荐系统初探（转+原）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-23T14:19:28+08:00">
+                2017-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 <a href="https://www.ibm.com/developerworks/cn/web/1103_zhaoct_recommstudy1/index.html#icomments" target="_blank" rel="external">探索推荐引擎内部的秘密</a> 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）</p>
+<a id="more"></a>
+<h1 id="为什么需要推荐系统"><a href="#为什么需要推荐系统" class="headerlink" title="为什么需要推荐系统"></a>为什么需要推荐系统</h1><p>&emsp;&emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越来越难。</p>
+<p>&emsp;&emsp;在这样的情形下，搜索引擎（Google，Bing，百度等等）成为大家快速找到目标信息的最好途径。在用户对自己需求相对明确的时候，用搜索引擎很方便的通过关键字搜索很快的找到自己需要的信息。但搜索引擎并不能完全满足用户对信息发现的需求，那是因为在很多情况下，用户其实并不明确自己的需要，或者他们的需求很难用简单的关键字来表述。又或者他们需要更加符合他们个人口味和喜好的结果，因此出现了推荐系统，与搜索引擎对应，大家也习惯称它为推荐引擎。</p>
+<p>&emsp;&emsp;随着推荐引擎的出现，用户获取信息的方式从简单的目标明确的数据的搜索转换到更高级更符合人们使用习惯的信息发现。</p>
+<p>&emsp;&emsp;如今，随着推荐技术的不断发展，推荐引擎已经在电子商务 (E-commerce，例如 Amazon，当当网 ) 和一些基于 social 的社会化站点 ( 包括音乐，电影和图书分享，例如豆瓣，Mtime 等 ) 都取得很大的成功。这也进一步的说明了，Web2.0 环境下，在面对海量的数据，用户需要这种更加智能的，更加了解他们需求，口味和喜好的信息发现机制。</p>
+<h1 id="推荐引擎的工作原理"><a href="#推荐引擎的工作原理" class="headerlink" title="推荐引擎的工作原理"></a>推荐引擎的工作原理</h1><p>&emsp;&emsp;前面介绍了推荐引擎对于现在的 Web2.0 站点的重要意义，这一章我们将讲讲推荐引擎到底是怎么工作的。推荐引擎利用特殊的信息过滤技术，将不同的物品或内容推荐给可能对它们感兴趣的用户。</p>
+<p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 1. 推荐引擎工作原理图<br><img src="/images/tjxt.jpg" alt="推荐引擎工作原理图"><br>图 1 给出了推荐引擎的工作原理图，这里先将推荐引擎看作黑盒，它接受的输入是推荐的数据源，一般情况下，推荐引擎所需要的数据源包括：</p>
+<ul>
+<li>要推荐物品或内容的元数据，例如关键字，基本描述等；</li>
+<li>系统用户的基本信息，例如性别，年龄等</li>
+<li>用户对物品或者信息的偏好，根据应用本身的不同，可能包括用户对物品的评分，用户查看物品的记录，用户的购买记录等。其实这些用户的偏好信息可以分为两类：<br>&emsp;&emsp; <strong>显式的用户反馈</strong>：这类是用户在网站上自然浏览或者使用网站以外，显式的提供反馈信息，例如用户对物品的评分，或者对物品的评论。<br>&emsp;&emsp; <strong>隐式的用户反馈</strong>：这类是用户在使用网站是产生的数据，隐式的反应了用户对物品的喜好，例如用户购买了某物品，用户查看了某物品的信息等等。</li>
+</ul>
+<p>&emsp;&emsp;显式的用户反馈能准确的反应用户对物品的真实喜好，但需要用户付出额外的代价，而隐式的用户行为，通过一些分析和处理，也能反映用户的喜好，只是数据不是很精确，有些行为的分析存在较大的噪音。但只要选择正确的行为特征，隐式的用户反馈也能得到很好的效果，只是行为特征的选择可能在不同的应用中有很大的不同，例如在电子商务的网站上，购买行为其实就是一个能很好表现用户喜好的隐式反馈。</p>
+<p>&emsp;&emsp;推荐引擎根据不同的推荐机制可能用到数据源中的一部分，然后根据这些数据，分析出一定的规则或者直接对用户对其他物品的喜好进行预测计算。这样推荐引擎可以在用户进入的时候给他推荐他可能感兴趣的物品</p>
+<h1 id="推荐引擎的分类"><a href="#推荐引擎的分类" class="headerlink" title="推荐引擎的分类"></a>推荐引擎的分类</h1><p>推荐引擎的分类可以根据很多指标，下面我们一一介绍一下：</p>
+<ol>
+<li>根据是否为不同的用户推荐不同的数据<br>根据这个指标，推荐引擎可以分为基于大众行为的推荐引擎和个性化推荐引擎<ul>
+<li><strong>根据大众行为的推荐引擎</strong>，对每个用户都给出同样的推荐，这些推荐可以是静态的由系统管理员人工设定的，或者基于系统所有用户的反馈统计计算出的当下比较流行的物品。</li>
+<li><strong>个性化推荐引擎</strong>，对不同的用户，根据他们的口味和喜好给出更加精确的推荐，这时，系统需要了解需推荐内容和用户的特质，或者基于社会化网络，通过找到与当前用户相同喜好的用户，实现推荐。</li>
+</ul>
+</li>
+<li>根据推荐引擎的数据源<br>&emsp;&emsp;其实这里讲的是如何发现数据的相关性，因为大部分推荐引擎的工作原理还是基于物品或者用户的相似集进行推荐。那么参考图 1 给出的推荐系统原理图，根据不同的数据源发现数据相关性的方法可以分为以下几种：<ul>
+<li>根据系统用户的基本信息发现用户的相关程度，这种被称为<strong>基于人口统计学的推荐</strong>（Demographic-based Recommendation）</li>
+<li>根据推荐物品或内容的元数据，发现物品或者内容的相关性，这种被称为<strong>基于内容的推荐</strong>（Content-based Recommendation）</li>
+<li>根据用户对物品或者信息的偏好，发现物品或者内容本身的相关性，或者是发现用户的相关性，这种被称为<strong>基于协同过滤的推荐</strong>（Collaborative Filtering-based Recommendation）。</li>
+</ul>
+</li>
+<li>根据推荐模型的建立方式<br>&emsp;&emsp;可以想象在海量物品和用户的系统中，推荐引擎的计算量是相当大的，要实现实时的推荐务必需要建立一个推荐模型，关于推荐模型的建立方式可以分为以下几种：<ul>
+<li><strong>基于物品和用户本身</strong>的，这种推荐引擎将每个用户和每个物品都当作独立的实体，预测每个用户对于每个物品的喜好程度，这些信息往往是用一个二维矩阵描述的。由于用户感兴趣的物品远远小于总物品的数目，这样的模型导致大量的数据空置，即我们得到的二维矩阵往往是一个很大的稀疏矩阵。同时为了减小计算量，我们可以对物品和用户进行聚类， 然后记录和计算一类用户对一类物品的喜好程度，但这样的模型又会在推荐的准确性上有损失。</li>
+<li><strong>基于关联规则的推荐</strong>（Rule-based Recommendation）：关联规则的挖掘已经是数据挖掘中的一个经典的问题，主要是挖掘一些数据的依赖关系，典型的场景就是“购物篮问题”，通过关联规则的挖掘，我们可以找到哪些物品经常被同时购买，或者用户购买了一些物品后通常会购买哪些其他的物品，当我们挖掘出这些关联规则之后，我们可以基于这些规则给用户进行推荐。</li>
+<li><strong>基于模型的推荐</strong>（Model-based Recommendation）：这是一个典型的机器学习的问题，可以将已有的用户喜好信息作为训练样本，训练出一个预测用户喜好的模型，这样以后用户在进入系统，可以基于此模型计算推荐。这种方法的问题在于如何将用户实时或者近期的喜好信息反馈给训练好的模型，从而提高推荐的准确度。</li>
+</ul>
+</li>
+</ol>
+<p>&emsp;&emsp;其实在现在的推荐系统中，很少有只使用了一个推荐策略的推荐引擎，一般都是在不同的场景下使用不同的推荐策略从而达到最好的推荐效果，例如 Amazon 的推荐，它将基于用户本身历史购买数据的推荐，和基于用户当前浏览的物品的推荐，以及基于大众喜好的当下比较流行的物品都在不同的区域推荐给用户，让用户可以从全方位的推荐中找到自己真正感兴趣的物品。</p>
+<h1 id="深入推荐系统"><a href="#深入推荐系统" class="headerlink" title="深入推荐系统"></a>深入推荐系统</h1><p>这一章的篇幅，将详细介绍各个推荐机制的工作原理，它们的优缺点以及应用场景。</p>
+<h2 id="基于人口统计学的推荐"><a href="#基于人口统计学的推荐" class="headerlink" title="基于人口统计学的推荐"></a>基于人口统计学的推荐</h2><p>&emsp;&emsp;基于人口统计学的推荐机制（Demographic-based Recommendation）是一种最易于实现的推荐方法，它只是简单的根据系统用户的基本信息发现用户的相关程度，然后将相似用户喜爱的其他物品推荐给当前用户，图 2 给出了这种推荐的工作原理。<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 2. 基于人口统计学的推荐机制的工作原理<br><img src="/images/tjxtyl.jpg" alt="基于人口统计学的推荐机制的工作原理"><br>&emsp;&emsp;从图中可以很清楚的看到，首先，系统对每个用户都有一个用户 Profile 的建模，其中包括用户的基本信息，例如用户的年龄，性别等等；然后，系统会根据用户的 Profile 计算用户的相似度，可以看到用户 A 的 Profile 和用户 C 一样，那么系统会认为用户 A 和 C 是相似用户，在推荐引擎中，可以称他们是“邻居”；最后，基于“邻居”用户群的喜好推荐给当前用户一些物品，图中将用户 A 喜欢的物品 A 推荐给用户 C。</p>
+<p>这种基于人口统计学的推荐机制的<strong>好处</strong>在于：</p>
+<ol>
+<li>因为不使用当前用户对物品的喜好历史数据，所以对于新用户来讲没有“冷启动（Cold Start）”的问题。</li>
+<li>这个方法不依赖于物品本身的数据，所以这个方法在不同物品的领域都可以使用，它是领域独立的（domain-independent）。</li>
+</ol>
+<p>那么这个方法的<strong>缺点和问题</strong>是什么呢？</p>
+<ol>
+<li>这种基于用户的基本信息对用户进行分类的方法过于粗糙，尤其是对品味要求较高的领域，比如图书，电影和音乐等领域，无法得到很好的推荐效果。可能在一些电子商务的网站中，这个方法可以给出一些简单的推荐。</li>
+<li>另外一个局限是，这个方法可能涉及到一些与信息发现问题本身无关却比较敏感的信息，比如用户的年龄等，这些用户信息不是很好获取。</li>
+</ol>
+<h2 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h2><p>&emsp;&emsp;基于内容的推荐是在推荐引擎出现之初应用最为广泛的推荐机制，它的核心思想是根据推荐物品或内容的元数据，发现物品或者内容的相关性，然后基于用户以往的喜好记录，推荐给用户相似的物品。图 3 给出了基于内容推荐的基本原理。<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 3. 基于内容推荐机制的基本原理<br><img src="/images/tjxtc.jpg" alt="基于人口统计学的推荐机制的工作原理"><br>&emsp;&emsp;图 3 中给出了基于内容推荐的一个典型的例子，电影推荐系统，首先我们需要对电影的元数据有一个建模，这里只简单的描述了一下电影的类型；然后通过电影的元数据发现电影间的相似度，因为类型都是“爱情，浪漫”电影 A 和 C 被认为是相似的电影（当然，只根据类型是不够的，要得到更好的推荐，我们还可以考虑电影的导演，演员等等）；最后实现推荐，对于用户 A，他喜欢看电影 A，那么系统就可以给他推荐类似的电影 C。</p>
+<p>&emsp;&emsp;这种基于内容的推荐机制的好处在于它能很好的建模用户的口味，能提供更加精确的推荐。但它也存在以下<strong>几个问题</strong>：</p>
+<ol>
+<li>需要对物品进行分析和建模，推荐的质量依赖于对物品模型的完整和全面程度。在现在的应用中我们可以观察到关键词和标签（Tag）被认为是描述物品元数据的一种简单有效的方法。</li>
+<li>物品相似度的分析仅仅依赖于物品本身的特征，这里没有考虑人对物品的态度。</li>
+<li>因为需要基于用户以往的喜好历史做出推荐，所以对于新用户有“冷启动”的问题。</li>
+</ol>
+<p>&emsp;&emsp;虽然这个方法有很多不足和问题，但他还是成功的应用在一些电影，音乐，图书的社交站点，有些站点还请专业的人员对物品进行基因编码，比如潘多拉，在一份报告中说道，在潘多拉的推荐引擎中，每首歌有超过 100 个元数据特征，包括歌曲的风格，年份，演唱者等等。</p>
+<h2 id="基于协同过滤的推荐"><a href="#基于协同过滤的推荐" class="headerlink" title="基于协同过滤的推荐"></a>基于协同过滤的推荐</h2><p>&emsp;&emsp;随着 Web2.0 的发展，Web 站点更加提倡用户参与和用户贡献，因此基于协同过滤的推荐机制因运而生。它的原理很简单，就是根据用户对物品或者信息的偏好，发现物品或者内容本身的相关性，或者是发现用户的相关性，然后再基于这些关联性进行推荐。基于协同过滤的推荐可以分为三个子类：基于用户的推荐（User-based Recommendation），基于项目的推荐（Item-based Recommendation）和基于模型的推荐（Model-based Recommendation）。下面我们一个一个详细的介绍着三种协同过滤的推荐机制。其中User-based Recommendation 和 Item-based Recommendation 还可以属于Memory-based Recommendation。</p>
+<h3 id="基于用户的协同过滤"><a href="#基于用户的协同过滤" class="headerlink" title="基于用户的协同过滤"></a>基于用户的协同过滤</h3><p>&emsp;&emsp;基于用户的协同过滤推荐的基本原理是，根据所有用户对物品或者信息的偏好，发现与当前用户口味和偏好相似的“邻居”用户群，在一般的应用中是采用计算“K- 邻居”的算法；然后，基于这 K 个邻居的历史偏好信息，为当前用户进行推荐。下图 4 给出了原理图。<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 4. 基于用户的协同过滤推荐机制的基本原理<br><img src="/images/tjxtxu.jpg" alt="基于用户的协同过滤推荐机制的基本原理"><br>&emsp;&emsp;上图示意出基于用户的协同过滤推荐机制的基本原理，假设用户 A 喜欢物品 A，物品 C，用户 B 喜欢物品 B，用户 C 喜欢物品 A ，物品 C 和物品 D；从这些用户的历史喜好信息中，我们可以发现用户 A 和用户 C 的口味和偏好是比较类似的，同时用户 C 还喜欢物品 D，那么我们可以推断用户 A 可能也喜欢物品 D，因此可以将物品 D 推荐给用户 A。</p>
+<p>&emsp;&emsp;基于用户的协同过滤推荐机制和基于人口统计学的推荐机制都是计算用户的相似度，并基于“邻居”用户群计算推荐，但它们所不同的是如何计算用户的相似度，基于人口统计学的机制只考虑用户本身的特征，而基于用户的协同过滤机制可是在用户的历史偏好的数据上计算用户的相似度，它的基本假设是，喜欢类似物品的用户可能有相同或者相似的口味和偏好。</p>
+<h3 id="基于项目的协同过滤"><a href="#基于项目的协同过滤" class="headerlink" title="基于项目的协同过滤"></a>基于项目的协同过滤</h3><p>&emsp;&emsp;基于项目的协同过滤推荐的基本原理也是类似的，只是说它使用所有用户对物品或者信息的偏好，发现物品和物品之间的相似度，然后根据用户的历史偏好信息，将类似的物品推荐给用户，图 5 很好的诠释了它的基本原理。<br>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 5. 基于项目的协同过滤推荐机制的基本原理<br><img src="/images/tjxtxi.jpg" alt="基于项目的协同过滤推荐机制的基本原理"><br>&emsp;&emsp;假设用户 A 喜欢物品 A 和物品 C，用户 B 喜欢物品 A，物品 B 和物品 C，用户 C 喜欢物品 A，从这些用户的历史喜好可以分析出物品 A 和物品 C 时比较类似的，喜欢物品 A 的人都喜欢物品 C，基于这个数据可以推断用户 C 很有可能也喜欢物品 C，所以系统会将物品 C 推荐给用户 C。<br>&emsp;&emsp;与上面讲的类似，基于项目的协同过滤推荐和基于内容的推荐其实都是基于物品相似度预测推荐，只是相似度计算的方法不一样，前者是从用户历史的偏好推断，而后者是基于物品本身的属性特征信息。</p>
+<p>&emsp;&emsp;<em>同时协同过滤，在基于用户和基于项目两个策略中应该如何选择呢？</em>其实基于项目的协同过滤推荐机制是 Amazon 在基于用户的机制上改良的一种策略，因为在大部分的 Web 站点中，物品的个数是远远小于用户的数量的，而且物品的个数和相似度相对比较稳定，同时基于项目的机制比基于用户的实时性更好一些。但也不是所有的场景都是这样的情况，可以设想一下在一些新闻推荐系统中，也许物品，也就是新闻的个数可能大于用户的个数，而且新闻的更新程度也有很快，所以它的形似度依然不稳定。所以，其实可以看出，推荐策略的选择其实和具体的应用场景有很大的关系。</p>
+<h3 id="基于模型的协同过滤"><a href="#基于模型的协同过滤" class="headerlink" title="基于模型的协同过滤"></a>基于模型的协同过滤</h3><p>&emsp;&emsp;基于模型的协同过滤推荐就是基于样本的用户喜好信息，训练一个推荐模型，然后根据实时的用户喜好的信息进行预测，计算推荐。基于协同过滤的推荐机制是现今应用最为广泛的推荐机制，它有以下几个显著的<strong>优点</strong>：</p>
+<ol>
+<li>它不需要对物品或者用户进行严格的建模，而且不要求物品的描述是机器可理解的，所以这种方法也是领域无关的。</li>
+<li>这种方法计算出来的推荐是开放的，可以共用他人的经验，很好的支持用户发现潜在的兴趣偏好</li>
+</ol>
+<p>而它也存在以下几个<strong>问题</strong>：</p>
+<ol>
+<li>方法的核心是基于历史数据，所以对新物品和新用户都有“冷启动”的问题。</li>
+<li>推荐的效果依赖于用户历史偏好数据的多少和准确性。</li>
+<li>在大部分的实现中，用户历史偏好是用稀疏矩阵进行存储的，而稀疏矩阵上的计算有些明显的问题，包括可能少部分人的错误偏好会对推荐的准确度有很大的影响等等。</li>
+<li>对于一些特殊品味的用户不能给予很好的推荐。</li>
+<li>由于以历史数据为基础，抓取和建模用户的偏好后，很难修改或者根据用户的使用演变，从而导致这个方法不够灵活。</li>
+</ol>
+<h2 id="基于关联规则的推荐"><a href="#基于关联规则的推荐" class="headerlink" title="基于关联规则的推荐"></a>基于关联规则的推荐</h2><p>&emsp;&emsp;基于关联规则的推荐（Association Rule-based Recommendation）是以关联规则为基础，把已购商品作为规则头，规则体为推荐对象。关联规则挖掘可以发现不同商品在销售过程中的相关性，在零 售业中已经得到了成功的应用。管理规则就是在一个交易数据库中统计购买了商品集X的交易中有多大比例的交易同时购买了商品集Y，其直观的意义就是用户在购 买某些商品的时候有多大倾向去购买另外一些商品。比如购买牛奶的同时很多人会同时购买面包。算法的第一步关联规则的发现最为关键且最耗时，是算法的瓶颈，但可以离线进行。其次，商品名称的同义性问题也是关联规则的一个难点。</p>
+<h2 id="基于效用推荐"><a href="#基于效用推荐" class="headerlink" title="基于效用推荐"></a>基于效用推荐</h2><p>基于效用的推荐（Utility-based Recommendation）是建立在对用户使用项目的效用情况上计算的，其核心问题是怎么样为每一个用户去创建一个效用函数，因此，用户资料模型很大 程度上是由系统所采用的效用函数决定的。基于效用推荐的好处是它能把非产品的属性，如提供商的可靠性（Vendor Reliability）和产品的可得性（Product Availability）等考虑到效用计算中。</p>
+<h2 id="基于知识推荐"><a href="#基于知识推荐" class="headerlink" title="基于知识推荐"></a>基于知识推荐</h2><p>&emsp;&emsp;基于知识的推荐（Knowledge-based Recommendation）在某种程度是可以看成是一种推理（Inference）技术，它不是建立在用户需要和偏好基础上推荐的。基于知识的方法因 它们所用的功能知识不同而有明显区别。效用知识（Functional Knowledge）是一种关于一个项目如何满足某一特定用户的知识，因此能解释需要和推荐的关系，所以用户资料可以是任何能支持推理的知识结构，它可以 是用户已经规范化的查询，也可以是一个更详细的用户需要的表示。</p>
+<h2 id="混合的推荐机制"><a href="#混合的推荐机制" class="headerlink" title="混合的推荐机制"></a>混合的推荐机制</h2><p>&emsp;&emsp;在现行的 Web 站点上的推荐往往都不是单纯只采用了某一种推荐的机制和策略，他们往往是将多个方法混合在一起，从而达到更好的推荐效果。关于如何组合各个推荐机制，这里讲几种比较流行的组合方法。<br>1）加权（Weight）：加权多种推荐技术结果。</p>
+<p>2）变换（Switch）：根据问题背景和实际情况或要求决定变换采用不同的推荐技术。</p>
+<p>3）混合（Mixed）：同时采用多种推荐技术给出多种推荐结果为用户提供参考。</p>
+<p>4）特征组合（Feature combination）：组合来自不同推荐数据源的特征被另一种推荐算法所采用。</p>
+<p>5）层叠（Cascade）：先用一种推荐技术产生一种粗糙的推荐结果，第二种推荐技术在此推荐结果的基础上进一步作出更精确的推荐。</p>
+<p>6）特征扩充（Feature augmentation）：一种技术产生附加的特征信息嵌入到另一种推荐技术的特征输入中。</p>
+<p>7）元级别（Meta-level）：用一种推荐方法产生的模型作为另一种推荐方法的输入。</p>
+<h1 id="主要推荐方法的对比"><a href="#主要推荐方法的对比" class="headerlink" title="主要推荐方法的对比"></a>主要推荐方法的对比</h1><p>各种推荐方法的优缺点见下表<br><img src="/images/tjxtcmp.png" alt="主要推荐算法对比"> </p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/23/test/" rel="prev" title="test">
+                test <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/tx.jpg"
+               alt="Pan Wang" />
+          <p class="site-author-name" itemprop="name">Pan Wang</p>
+           
+              <p class="site-description motion-element" itemprop="description">Pan's Blog</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wpfengqi" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:147420436@qq.com" target="_blank" title="Mail">
+                  
+                    <i class="fa fa-fw fa-address-book-o"></i>
+                  
+                  Mail
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要推荐系统"><span class="nav-number">1.</span> <span class="nav-text">为什么需要推荐系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的工作原理"><span class="nav-number">2.</span> <span class="nav-text">推荐引擎的工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的分类"><span class="nav-number">3.</span> <span class="nav-text">推荐引擎的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深入推荐系统"><span class="nav-number">4.</span> <span class="nav-text">深入推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于人口统计学的推荐"><span class="nav-number">4.1.</span> <span class="nav-text">基于人口统计学的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于内容的推荐"><span class="nav-number">4.2.</span> <span class="nav-text">基于内容的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于协同过滤的推荐"><span class="nav-number">4.3.</span> <span class="nav-text">基于协同过滤的推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于用户的协同过滤"><span class="nav-number">4.3.1.</span> <span class="nav-text">基于用户的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于项目的协同过滤"><span class="nav-number">4.3.2.</span> <span class="nav-text">基于项目的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于模型的协同过滤"><span class="nav-number">4.3.3.</span> <span class="nav-text">基于模型的协同过滤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于关联规则的推荐"><span class="nav-number">4.4.</span> <span class="nav-text">基于关联规则的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于效用推荐"><span class="nav-number">4.5.</span> <span class="nav-text">基于效用推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于知识推荐"><span class="nav-number">4.6.</span> <span class="nav-text">基于知识推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#混合的推荐机制"><span class="nav-number">4.7.</span> <span class="nav-text">混合的推荐机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要推荐方法的对比"><span class="nav-number">5.</span> <span class="nav-text">主要推荐方法的对比</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Pan Wang</span>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
