@@ -93,13 +93,13 @@
 
 
 
-<meta name="description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta name="description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播） 为什么需要推荐系统&amp;emsp;&amp;emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越">
 <meta name="keywords" content="推荐">
 <meta property="og:type" content="article">
 <meta property="og:title" content="推荐系统初探（转+原）">
-<meta property="og:url" content="http://wpfengqi.github.io.git/2017/07/23/Recommand System/index.html">
+<meta property="og:url" content="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_1/index.html">
 <meta property="og:site_name" content="Mr.PanPan">
-<meta property="og:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta property="og:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播） 为什么需要推荐系统&amp;emsp;&amp;emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxt.jpg">
 <meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtyl.jpg">
@@ -107,10 +107,10 @@
 <meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtxu.jpg">
 <meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtxi.jpg">
 <meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtcmp.png">
-<meta property="og:updated_time" content="2017-07-24T09:23:17.595Z">
+<meta property="og:updated_time" content="2017-07-24T12:06:36.294Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="推荐系统初探（转+原）">
-<meta name="twitter:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）">
+<meta name="twitter:description" content="这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 探索推荐引擎内部的秘密 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播） 为什么需要推荐系统&amp;emsp;&amp;emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越">
 <meta name="twitter:image" content="http://wpfengqi.github.io.git/images/tjxt.jpg">
 
 
@@ -128,9 +128,9 @@
       author: '博主'
     },
     algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
+      applicationID: 'T5R0RZLTRY',
+      apiKey: 'fa15c76abc3a27e4b36dc3320badc0f7',
+      indexName: 'Blog',
       hits: {"per_page":10},
       labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     }
@@ -139,7 +139,7 @@
 
 
 
-  <link rel="canonical" href="http://wpfengqi.github.io.git/2017/07/23/Recommand System/"/>
+  <link rel="canonical" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_1/"/>
 
 
 
@@ -247,9 +247,47 @@
       
 
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
     </ul>
   
 
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
   
 </nav>
 
@@ -274,7 +312,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand System/">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Pan Wang">
@@ -361,9 +399,9 @@
 
       
         <p>这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 <a href="https://www.ibm.com/developerworks/cn/web/1103_zhaoct_recommstudy1/index.html#icomments" target="_blank" rel="external">探索推荐引擎内部的秘密</a> 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）</p>
-<a id="more"></a>
 <h1 id="为什么需要推荐系统"><a href="#为什么需要推荐系统" class="headerlink" title="为什么需要推荐系统"></a>为什么需要推荐系统</h1><p>&emsp;&emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越来越难。</p>
 <p>&emsp;&emsp;在这样的情形下，搜索引擎（Google，Bing，百度等等）成为大家快速找到目标信息的最好途径。在用户对自己需求相对明确的时候，用搜索引擎很方便的通过关键字搜索很快的找到自己需要的信息。但搜索引擎并不能完全满足用户对信息发现的需求，那是因为在很多情况下，用户其实并不明确自己的需要，或者他们的需求很难用简单的关键字来表述。又或者他们需要更加符合他们个人口味和喜好的结果，因此出现了推荐系统，与搜索引擎对应，大家也习惯称它为推荐引擎。</p>
+<a id="more"></a>
 <p>&emsp;&emsp;随着推荐引擎的出现，用户获取信息的方式从简单的目标明确的数据的搜索转换到更高级更符合人们使用习惯的信息发现。</p>
 <p>&emsp;&emsp;如今，随着推荐技术的不断发展，推荐引擎已经在电子商务 (E-commerce，例如 Amazon，当当网 ) 和一些基于 social 的社会化站点 ( 包括音乐，电影和图书分享，例如豆瓣，Mtime 等 ) 都取得很大的成功。这也进一步的说明了，Web2.0 环境下，在面对海量的数据，用户需要这种更加智能的，更加了解他们需求，口味和喜好的信息发现机制。</p>
 <h1 id="推荐引擎的工作原理"><a href="#推荐引擎的工作原理" class="headerlink" title="推荐引擎的工作原理"></a>推荐引擎的工作原理</h1><p>&emsp;&emsp;前面介绍了推荐引擎对于现在的 Web2.0 站点的重要意义，这一章我们将讲讲推荐引擎到底是怎么工作的。推荐引擎利用特殊的信息过滤技术，将不同的物品或内容推荐给可能对它们感兴趣的用户。</p>
@@ -445,6 +483,10 @@
 <p>6）特征扩充（Feature augmentation）：一种技术产生附加的特征信息嵌入到另一种推荐技术的特征输入中。</p>
 <p>7）元级别（Meta-level）：用一种推荐方法产生的模型作为另一种推荐方法的输入。</p>
 <h1 id="主要推荐方法的对比"><a href="#主要推荐方法的对比" class="headerlink" title="主要推荐方法的对比"></a>主要推荐方法的对比</h1><p>各种推荐方法的优缺点见下表<br><img src="/images/tjxtcmp.png" alt="主要推荐算法对比"> </p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="https://www.ibm.com/developerworks/cn/web/1103_zhaoct_recommstudy1/index.html#icomments" target="_blank" rel="external">探索推荐引擎内部的秘密</a> </li>
+<li><a href="http://www.woshipm.com/operate/107472.html" target="_blank" rel="external">推荐系统中常用算法 以及优点缺点对比</a> </li>
+</ol>
 
       
     </div>
@@ -493,8 +535,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/07/23/test/" rel="prev" title="test">
-                test <i class="fa fa-chevron-right"></i>
+              <a href="/2017/07/23/Recommand_System_2/" rel="prev" title="深度探讨协同过滤（转+原）">
+                深度探讨协同过滤（转+原） <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -645,7 +687,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要推荐系统"><span class="nav-number">1.</span> <span class="nav-text">为什么需要推荐系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的工作原理"><span class="nav-number">2.</span> <span class="nav-text">推荐引擎的工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的分类"><span class="nav-number">3.</span> <span class="nav-text">推荐引擎的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深入推荐系统"><span class="nav-number">4.</span> <span class="nav-text">深入推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于人口统计学的推荐"><span class="nav-number">4.1.</span> <span class="nav-text">基于人口统计学的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于内容的推荐"><span class="nav-number">4.2.</span> <span class="nav-text">基于内容的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于协同过滤的推荐"><span class="nav-number">4.3.</span> <span class="nav-text">基于协同过滤的推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于用户的协同过滤"><span class="nav-number">4.3.1.</span> <span class="nav-text">基于用户的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于项目的协同过滤"><span class="nav-number">4.3.2.</span> <span class="nav-text">基于项目的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于模型的协同过滤"><span class="nav-number">4.3.3.</span> <span class="nav-text">基于模型的协同过滤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于关联规则的推荐"><span class="nav-number">4.4.</span> <span class="nav-text">基于关联规则的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于效用推荐"><span class="nav-number">4.5.</span> <span class="nav-text">基于效用推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于知识推荐"><span class="nav-number">4.6.</span> <span class="nav-text">基于知识推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#混合的推荐机制"><span class="nav-number">4.7.</span> <span class="nav-text">混合的推荐机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要推荐方法的对比"><span class="nav-number">5.</span> <span class="nav-text">主要推荐方法的对比</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要推荐系统"><span class="nav-number">1.</span> <span class="nav-text">为什么需要推荐系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的工作原理"><span class="nav-number">2.</span> <span class="nav-text">推荐引擎的工作原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#推荐引擎的分类"><span class="nav-number">3.</span> <span class="nav-text">推荐引擎的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#深入推荐系统"><span class="nav-number">4.</span> <span class="nav-text">深入推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于人口统计学的推荐"><span class="nav-number">4.1.</span> <span class="nav-text">基于人口统计学的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于内容的推荐"><span class="nav-number">4.2.</span> <span class="nav-text">基于内容的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于协同过滤的推荐"><span class="nav-number">4.3.</span> <span class="nav-text">基于协同过滤的推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基于用户的协同过滤"><span class="nav-number">4.3.1.</span> <span class="nav-text">基于用户的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于项目的协同过滤"><span class="nav-number">4.3.2.</span> <span class="nav-text">基于项目的协同过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基于模型的协同过滤"><span class="nav-number">4.3.3.</span> <span class="nav-text">基于模型的协同过滤</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于关联规则的推荐"><span class="nav-number">4.4.</span> <span class="nav-text">基于关联规则的推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于效用推荐"><span class="nav-number">4.5.</span> <span class="nav-text">基于效用推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于知识推荐"><span class="nav-number">4.6.</span> <span class="nav-text">基于知识推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#混合的推荐机制"><span class="nav-number">4.7.</span> <span class="nav-text">混合的推荐机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#主要推荐方法的对比"><span class="nav-number">5.</span> <span class="nav-text">主要推荐方法的对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考文献"><span class="nav-number">6.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
@@ -801,6 +843,19 @@
   
 
 
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.1"></script>
 
 
 

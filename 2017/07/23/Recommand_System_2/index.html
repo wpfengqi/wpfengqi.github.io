@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="推荐," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="在推荐系统初探（转+原）中我们对协同过滤技术已经做了简单介绍，因此这一章我将继续深入讲解协同过滤。 深入协同过滤的核心前面作为背景知识，介绍了协同过滤的基本思想，这一节我们将深入分析协同过滤的原理，介绍基于协同过滤思想的多种推荐机制，优缺点和实用场景。 首先，要实现协同过滤，需要一下几个步骤  收集用户偏好 找到相似的用户或物品 计算推荐">
+<meta name="keywords" content="推荐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深度探讨协同过滤（转+原）">
+<meta property="og:url" content="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_2/index.html">
+<meta property="og:site_name" content="Mr.PanPan">
+<meta property="og:description" content="在推荐系统初探（转+原）中我们对协同过滤技术已经做了简单介绍，因此这一章我将继续深入讲解协同过滤。 深入协同过滤的核心前面作为背景知识，介绍了协同过滤的基本思想，这一节我们将深入分析协同过滤的原理，介绍基于协同过滤思想的多种推荐机制，优缺点和实用场景。 首先，要实现协同过滤，需要一下几个步骤  收集用户偏好 找到相似的用户或物品 计算推荐">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxte1.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxte2.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxte3.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxte4.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxte5.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtknn.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxtucf.gif">
+<meta property="og:image" content="http://wpfengqi.github.io.git/images/tjxticf.gif">
+<meta property="og:updated_time" content="2017-07-24T13:54:56.225Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深度探讨协同过滤（转+原）">
+<meta name="twitter:description" content="在推荐系统初探（转+原）中我们对协同过滤技术已经做了简单介绍，因此这一章我将继续深入讲解协同过滤。 深入协同过滤的核心前面作为背景知识，介绍了协同过滤的基本思想，这一节我们将深入分析协同过滤的原理，介绍基于协同过滤思想的多种推荐机制，优缺点和实用场景。 首先，要实现协同过滤，需要一下几个步骤  收集用户偏好 找到相似的用户或物品 计算推荐">
+<meta name="twitter:image" content="http://wpfengqi.github.io.git/images/tjxte1.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'T5R0RZLTRY',
+      apiKey: 'fa15c76abc3a27e4b36dc3320badc0f7',
+      indexName: 'Blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_2/"/>
+
+
+
+
+
+  <title>深度探讨协同过滤（转+原） | Mr.PanPan</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.PanPan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Pan Wang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/tx.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.PanPan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深度探讨协同过滤（转+原）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-23T14:33:22+08:00">
+                2017-07-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在<a href="/2017/07/23/Recommand_System_1/" title="推荐系统初探（转+原）">推荐系统初探（转+原）</a>中我们对协同过滤技术已经做了简单介绍，因此这一章我将继续深入讲解协同过滤。</p>
+<h1 id="深入协同过滤的核心"><a href="#深入协同过滤的核心" class="headerlink" title="深入协同过滤的核心"></a>深入协同过滤的核心</h1><p>前面作为背景知识，介绍了协同过滤的基本思想，这一节我们将深入分析协同过滤的原理，介绍基于协同过滤思想的多种推荐机制，优缺点和实用场景。</p>
+<p>首先，要实现协同过滤，需要一下几个步骤</p>
+<ul>
+<li>收集用户偏好</li>
+<li>找到相似的用户或物品</li>
+<li>计算推荐</li>
+</ul>
+<a id="more"></a>
+<h1 id="收集用户偏好"><a href="#收集用户偏好" class="headerlink" title="收集用户偏好"></a>收集用户偏好</h1><p>要从用户的行为和偏好中发现规律，并基于此给予推荐，如何收集用户的偏好信息成为系统推荐效果最基础的决定因素。用户有很多方式向系统提供自己的偏好信息，而且不同的应用也可能大不相同，下面举例进行介绍：</p>
+<p>表 1 用户行为和用户偏好</p>
+<style>
+table th:first-of-type {
+    width: 80px;
+}
+table th:nth-of-type(2) {
+    width: 50px;
+}
+</style>
+
+<table>
+<thead>
+<tr>
+<th>用户行为</th>
+<th>类型</th>
+<th>特征</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>评分</td>
+<td>显式</td>
+<td>整数量化的偏好，可能的取值是 [0, n]；n 一般取值为 5 或者是 10</td>
+<td>通过用户对物品的评分，可以精确的得到用户的偏好</td>
+</tr>
+<tr>
+<td>投票</td>
+<td>显式</td>
+<td>布尔量化的偏好，取值是 0 或 1</td>
+<td>通过用户对物品的投票，可以较精确的得到用户的偏好</td>
+</tr>
+<tr>
+<td>转发</td>
+<td>显式</td>
+<td>布尔量化的偏好，取值是 0 或 1</td>
+<td>通过用户对物品的投票，可以精确的得到用户的偏好。 如果是站内，同时可以推理得到被转发人的偏好（不精确）</td>
+</tr>
+<tr>
+<td>保存书签</td>
+<td>显示</td>
+<td>布尔量化的偏好，取值是 0 或 1</td>
+<td>通过用户对物品的投票，可以精确的得到用户的偏好。</td>
+</tr>
+<tr>
+<td>标记标签    (Tag)</td>
+<td>显示</td>
+<td>一些单词，需要对单词进行分析，得到偏好</td>
+<td>通过分析用户的标签，可以得到用户对项目的理解，同时可以分析出用户的情感：喜欢还是讨厌</td>
+</tr>
+<tr>
+<td>评论</td>
+<td>显示</td>
+<td>一段文字，需要进行文本分析，得到偏好</td>
+<td>通过分析用户的评论，可以得到用户的情感：喜欢还是讨厌</td>
+</tr>
+<tr>
+<td>点击流 ( 查看 )</td>
+<td>隐式</td>
+<td>一组用户的点击，用户对物品感兴趣，需要进行分析，得到偏好</td>
+<td>用户的点击一定程度上反映了用户的注意力，所以它也可以从一定程度上反映用户的喜好。</td>
+</tr>
+<tr>
+<td>页面停留时间</td>
+<td>隐式</td>
+<td>一组时间信息，噪音大，需要进行去噪，分析，得到偏好</td>
+<td>用户的页面停留时间一定程度上反映了用户的注意力和喜好，但噪音偏大，不好利用。</td>
+</tr>
+<tr>
+<td>购买</td>
+<td>隐式</td>
+<td>布尔量化的偏好，取值是 0 或 1</td>
+<td>用户的购买是很明确的说明这个项目它感兴趣。</td>
+</tr>
+</tbody>
+</table>
+<p>以上列举的用户行为都是比较通用的，推荐引擎设计人员可以根据自己应用的特点添加特殊的用户行为，并用他们表示用户对物品的喜好。</p>
+<p>在一般应用中，我们提取的用户行为一般都多于一种，关于如何组合这些不同的用户行为，基本上有以下两种方式：</p>
+<ul>
+<li>将不同的行为分组：一般可以分为“查看”和“购买”等等，然后基于不同的行为，计算不同的用户 / 物品相似度。类似于当当网或者 Amazon 给出的“购买了该图书的人还购买了 …”，“查看了图书的人还查看了 …”</li>
+<li>根据不同行为反映用户喜好的程度将它们进行加权，得到用户对于物品的总体喜好。一般来说，显式的用户反馈比隐式的权值大，但比较稀疏，毕竟进行显示反馈的用户是少数；同时相对于“查看”，“购买”行为反映用户喜好的程度更大，但这也因应用而异。</li>
+</ul>
+<p>收集了用户行为数据，我们还需要对数据进行一定的预处理，其中最核心的工作就是：减噪和归一化。</p>
+<ul>
+<li><strong>减噪</strong>：用户行为数据是用户在使用应用过程中产生的，它可能存在大量的噪音和用户的误操作，我们可以通过经典的数据挖掘算法过滤掉行为数据中的噪音，这样可以是我们的分析更加精确。</li>
+<li><strong>归一化</strong>：如前面讲到的，在计算用户对物品的喜好程度时，可能需要对不同的行为数据进行加权。但可以想象，不同行为的数据取值可能相差很大，比如，用户的查看数据必然比购买数据大的多，如何将各个行为的数据统一在一个相同的取值范围中，从而使得加权求和得到的总体喜好更加精确，就需要我们进行归一化处理。最简单的归一化处理，就是将各类数据除以此类中的最大值，以保证归一化后的数据取值在 [0,1] 范围中。</li>
+</ul>
+<p>进行的预处理后，根据不同应用的行为分析方法，可以选择分组或者加权处理，之后我们可以得到一个用户偏好的二维矩阵，一维是用户列表，另一维是物品列表，值是用户对物品的偏好，一般是 [0,1] 或者 [-1, 1] 的浮点数值。</p>
+<h1 id="找到相似的用户或物品"><a href="#找到相似的用户或物品" class="headerlink" title="找到相似的用户或物品"></a>找到相似的用户或物品</h1><p>当已经对用户行为进行分析得到用户喜好后，我们可以根据用户喜好计算相似用户和物品，然后基于相似用户或者物品进行推荐，这就是最典型的 CF 的两个分支：基于用户的 CF 和基于物品的 CF。这两种方法都需要计算相似度，下面我们先看看最基本的几种计算相似度的方法。</p>
+<h2 id="相似度的计算"><a href="#相似度的计算" class="headerlink" title="相似度的计算"></a>相似度的计算</h2><p>关于相似度的计算，现有的几种基本方法都是基于向量（Vector）的，其实也就是计算两个向量的距离，距离越近相似度越大。在推荐的场景中，在用户 - 物品偏好的二维矩阵中，我们可以将一个用户对所有物品的偏好作为一个向量来计算用户之间的相似度，或者将所有用户对某个物品的偏好作为一个向量来计算物品之间的相似度。下面我们详细介绍几种常用的相似度计算方法：</p>
+<ul>
+<li>欧几里德距离（Euclidean Distance）</li>
+</ul>
+<p>最初用于计算欧几里德空间中两个点的距离，假设 x，y 是 n 维空间的两个点，它们之间的欧几里德距离是：<br><img src="/images/tjxte1.gif" alt="欧式距离"> </p>
+<p>可以看出，当 n=2 时，欧几里德距离就是平面上两个点的距离。<br>当用欧几里德距离表示相似度，一般采用以下公式进行转换：距离越小，相似度越大<br><img src="/images/tjxte2.gif" alt="欧式相似度"> </p>
+<ul>
+<li>皮尔逊相关系数（Pearson Correlation Coefficient）</li>
+</ul>
+<p>皮尔逊相关系数一般用于计算两个定距变量间联系的紧密程度，它的取值在 [-1，+1] 之间。<br><img src="/images/tjxte3.gif" alt="皮尔森相关系数"><br>sx, sy是 x 和 y 的样品标准偏差。</p>
+<ul>
+<li>Cosine 相似度（Cosine Similarity）</li>
+</ul>
+<p>Cosine 相似度被广泛应用于计算文档数据的相似度：<br><img src="/images/tjxte4.gif" alt="Cosine 相似度"> </p>
+<ul>
+<li>Tanimoto 系数（Tanimoto Coefficient）</li>
+</ul>
+<p>Tanimoto 系数也称为 Jaccard 系数，是 Cosine 相似度的扩展，也多用于计算文档数据的相似度：<br><img src="/images/tjxte5.gif" alt="Cosine 相似度"> </p>
+<h2 id="相似邻居的计算"><a href="#相似邻居的计算" class="headerlink" title="相似邻居的计算"></a>相似邻居的计算</h2><p>介绍完相似度的计算方法，下面我们看看如何根据相似度找到用户 - 物品的邻居，常用的挑选邻居的原则可以分为两类：图 1 给出了二维平面空间上点集的示意图。</p>
+<ul>
+<li>固定数量的邻居：K-neighborhoods 或者 Fix-size neighborhoods</li>
+</ul>
+<p>不论邻居的“远近”，<strong>只取最近的 K 个</strong>，作为其邻居。如图 1 中的 A，假设要计算点 1 的 5- 邻居，那么根据点之间的距离，我们取最近的 5 个点，分别是点 2，点 3，点 4，点 7 和点 5。但很明显我们可以看出，这种方法对于孤立点的计算效果不好，因为要取固定个数的邻居，当它附近没有足够多比较相似的点，就被迫取一些不太相似的点作为邻居，这样就影响了邻居相似的程度，比如图 1 中，点 1 和点 5 其实并不是很相似。</p>
+<ul>
+<li>基于相似度门槛的邻居：Threshold-based neighborhoods</li>
+</ul>
+<p>与计算固定数量的邻居的原则不同，基于相似度门槛的邻居计算是对邻居的远近进行最大值的限制，落在以当前点为中心，<strong>距离为 K 的区域中的所有点</strong>都作为当前点的邻居，这种方法计算得到的邻居个数不确定，但相似度不会出现较大的误差。如图 1 中的 B，从点 1 出发，计算相似度在 K 内的邻居，得到点 2，点 3，点 4 和点 7，<strong>这种方法计算出的邻居的相似度程度比前一种优，尤其是对孤立点的处理</strong>。</p>
+<p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 1.相似邻居计算示意图</p>
+<p><img src="/images/tjxtknn.gif" alt="相似邻居计算"></p>
+<h1 id="计算推荐"><a href="#计算推荐" class="headerlink" title="计算推荐"></a>计算推荐</h1><p>经过前期的计算已经得到了相邻用户和相邻物品，下面介绍如何基于这些信息为用户进行推荐。本系列的上一篇综述文章已经简要介绍过基于协同过滤的推荐算法可以分为基于用户的 CF 和基于物品的 CF，下面我们深入这两种方法的计算方法，使用场景和优缺点。</p>
+<h2 id="基于用户的-CF（User-CF）"><a href="#基于用户的-CF（User-CF）" class="headerlink" title="基于用户的 CF（User CF）"></a>基于用户的 CF（User CF）</h2><p>基于用户的 CF 的基本思想相当简单，<strong>基于用户对物品的偏好找到相邻邻居用户，然后将邻居用户喜欢的推荐给当前用户</strong>。计算上，就是将一个用户对所有物品的偏好作为一个向量来计算用户之间的相似度，找到 K 邻居后，根据邻居的相似度权重以及他们对物品的偏好，预测当前用户没有偏好的未涉及物品，计算得到一个排序的物品列表作为推荐。图 2 给出了一个例子，对于用户 A，根据用户的历史偏好，这里只计算得到一个邻居 - 用户 C，然后将用户 C 喜欢的物品 D 推荐给用户 A</p>
+<p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 2.基于用户的 CF 的基本原理<br><img src="/images/tjxtucf.gif" alt="相似邻居计算"></p>
+<h2 id="基于物品的-CF（Item-CF）"><a href="#基于物品的-CF（Item-CF）" class="headerlink" title="基于物品的 CF（Item CF）"></a>基于物品的 CF（Item CF）</h2><p>基于物品的 CF 的原理和基于用户的 CF 类似，<strong>只是在计算邻居时采用物品本身，而不是从用户的角度，即基于用户对物品的偏好找到相似的物品</strong>，然后根据用户的历史偏好，推荐相似的物品给他。从计算的角度看，就是将所有用户对某个物品的偏好作为一个向量来计算物品之间的相似度，得到物品的相似物品后，根据用户历史的偏好预测当前用户还没有表示偏好的物品，计算得到一个排序的物品列表作为推荐。图 3 给出了一个例子，对于物品 A，根据所有用户的历史偏好，喜欢物品 A 的用户都喜欢物品 C，得出物品 A 和物品 C 比较相似，而用户 C 喜欢物品 A，那么可以推断出用户 C 可能也喜欢物品 C。</p>
+<p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;图 3.基于物品的 CF 的基本原理<br><img src="/images/tjxticf.gif" alt="相似邻居计算"></p>
+<h2 id="User-CF-vs-Item-CF"><a href="#User-CF-vs-Item-CF" class="headerlink" title="User CF vs. Item CF"></a>User CF vs. Item CF</h2><p>前面介绍了 User CF 和 Item CF 的基本原理，下面我们分几个不同的角度深入看看它们各自的优缺点和适用场景：</p>
+<ul>
+<li>计算复杂度</li>
+</ul>
+<p>Item CF 和 User CF 是基于协同过滤推荐的两个最基本的算法，User CF 是很早以前就提出来了，Item CF 是从 Amazon 的论文和专利发表之后（2001 年左右）开始流行，大家都觉得 Item CF 从性能和复杂度上比 User CF 更优，其中的一个主要原因就是对于一个在线网站，<strong>用户的数量往往大大超过物品的数量，同时物品的数据相对稳定，因此计算物品的相似度不但计算量较小，同时也不必频繁更新</strong>。但我们往往忽略了这种情况只适应于提供商品的电子商务网站，对于新闻，博客或者微内容的推荐系统，情况往往是相反的，物品的数量是海量的，同时也是更新频繁的，所以单从复杂度的角度，这两个算法在不同的系统中各有优势，推荐引擎的设计者需要根据自己应用的特点选择更加合适的算法。</p>
+<ul>
+<li>适用场景</li>
+</ul>
+<p>在<strong>非社交网络的网站</strong>中，内容内在的联系是很重要的推荐原则，它比基于相似用户的推荐原则更加有效。比如在购书网站上，当你看一本书的时候，推荐引擎会给你推荐相关的书籍，这个推荐的重要性远远超过了网站首页对该用户的综合推荐。可以看到，在这种情况下，Item CF 的推荐成为了引导用户浏览的重要手段。同时 Item CF 便于为推荐做出解释，在一个非社交网络的网站中，给某个用户推荐一本书，同时给出的解释是某某和你有相似兴趣的人也看了这本书，这很难让用户信服，因为用户可能根本不认识那个人；但如果解释说是因为这本书和你以前看的某本书相似，用户可能就觉得合理而采纳了此推荐。<br>相反的，在现今很流行的<strong>社交网络</strong>站点中，User CF 是一个更不错的选择，User CF 加上社会网络信息，可以增加用户对推荐解释的信服程度。</p>
+<ul>
+<li>推荐多样性和精度</li>
+</ul>
+<p>研究推荐引擎的学者们在相同的数据集合上分别用 User CF 和 Item CF 计算推荐结果，发现推荐列表中，只有 50% 是一样的，还有 50% 完全不同。但是这两个算法确有相似的精度，所以可以说，这两个算法是很互补的。</p>
+<p>关于推荐的多样性，有两种度量方法：</p>
+<p>&emsp;&emsp;* 第一种度量方法是从单个用户的角度度量，就是说给定一个用户，查看系统给出的推荐列表是否多样，也就是要比较推荐列表中的物品之间两两的相似度，不难想到，对这种度量方法，Item CF 的多样性显然不如 User CF 的好，因为 Item CF 的推荐就是和以前看的东西最相似的。</p>
+<p>&emsp;&emsp;*  第二种度量方法是考虑系统的多样性，也被称为覆盖率 (Coverage)，它是指一个推荐系统是否能够提供给所有用户丰富的选择。在这种指标下，Item CF 的多样性要远远好于 User CF, 因为 User CF 总是倾向于推荐热门的，从另一个侧面看，也就是说，Item CF 的推荐有很好的新颖性，很擅长推荐长尾里的物品。所以，尽管大多数情况，Item CF 的精度略小于 User CF， 但如果考虑多样性，Item CF 却比 User CF 好很多。</p>
+<p>解决方案： 两者相结合！！</p>
+<ul>
+<li>用户对推荐算法的适应度</li>
+</ul>
+<p>前面我们大部分都是从推荐引擎的角度考虑哪个算法更优，但其实我们更多的应该考虑作为推荐引擎的最终使用者 – 应用用户对推荐算法的适应度。</p>
+<p>对于 User CF，推荐的原则是假设用户会喜欢那些和他有相同喜好的用户喜欢的东西，<strong>但如果一个用户没有相同喜好的朋友</strong>，那 User CF 的算法的效果就会很差，所以一个用户对的 CF 算法的适应度是和他有多少共同喜好用户成正比的。</p>
+<p>Item CF 算法也有一个基本假设，就是<strong>用户会喜欢和他以前喜欢的东西相似的东西</strong>，那么我们可以计算一个用户喜欢的物品的自相似度。一个用户喜欢物品的自相似度大，就说明他喜欢的东西都是比较相似的，也就是说他比较符合 Item CF 方法的基本假设，那么他对 Item CF 的适应度自然比较好；反之，如果自相似度小，就说明这个用户的喜好习惯并不满足 Item CF 方法的基本假设，那么对于这种用户，用 Item CF 方法做出好的推荐的可能性非常低。</p>
+<h1 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h1>
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/23/Recommand_System_1/" rel="next" title="推荐系统初探（转+原）">
+                <i class="fa fa-chevron-left"></i> 推荐系统初探（转+原）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/tx.jpg"
+               alt="Pan Wang" />
+          <p class="site-author-name" itemprop="name">Pan Wang</p>
+           
+              <p class="site-description motion-element" itemprop="description">Pan's Blog</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wpfengqi" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:147420436@qq.com" target="_blank" title="Mail">
+                  
+                    <i class="fa fa-fw fa-address-book-o"></i>
+                  
+                  Mail
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#深入协同过滤的核心"><span class="nav-number">1.</span> <span class="nav-text">深入协同过滤的核心</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#收集用户偏好"><span class="nav-number">2.</span> <span class="nav-text">收集用户偏好</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#找到相似的用户或物品"><span class="nav-number">3.</span> <span class="nav-text">找到相似的用户或物品</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#相似度的计算"><span class="nav-number">3.1.</span> <span class="nav-text">相似度的计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相似邻居的计算"><span class="nav-number">3.2.</span> <span class="nav-text">相似邻居的计算</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算推荐"><span class="nav-number">4.</span> <span class="nav-text">计算推荐</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基于用户的-CF（User-CF）"><span class="nav-number">4.1.</span> <span class="nav-text">基于用户的 CF（User CF）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基于物品的-CF（Item-CF）"><span class="nav-number">4.2.</span> <span class="nav-text">基于物品的 CF（Item CF）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#User-CF-vs-Item-CF"><span class="nav-number">4.3.</span> <span class="nav-text">User CF vs. Item CF</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#代码实现"><span class="nav-number">5.</span> <span class="nav-text">代码实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Pan Wang</span>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.1"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

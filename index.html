@@ -119,9 +119,9 @@
       author: '博主'
     },
     algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
+      applicationID: 'T5R0RZLTRY',
+      apiKey: 'fa15c76abc3a27e4b36dc3320badc0f7',
+      indexName: 'Blog',
       hits: {"per_page":10},
       labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
     }
@@ -240,9 +240,47 @@
       
 
       
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
     </ul>
   
 
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
   
 </nav>
 
@@ -267,7 +305,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/test/">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Pan Wang">
@@ -286,7 +324,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/07/23/test/" itemprop="url">test</a></h1>
+                <a class="post-title-link" href="/2017/07/23/Recommand_System_2/" itemprop="url">深度探讨协同过滤（转+原）</a></h1>
         
 
         <div class="post-meta">
@@ -308,6 +346,28 @@
             
           </span>
 
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/机器学习/" itemprop="url" rel="index">
+                    <span itemprop="name">机器学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -334,10 +394,21 @@
 
       
         
-          
-            <p>This is test!<br>hahaha</p>
-
-          
+          <p>在<a href="/2017/07/23/Recommand_System_1/" title="推荐系统初探（转+原）">推荐系统初探（转+原）</a>中我们对协同过滤技术已经做了简单介绍，因此这一章我将继续深入讲解协同过滤。</p>
+<h1 id="深入协同过滤的核心"><a href="#深入协同过滤的核心" class="headerlink" title="深入协同过滤的核心"></a>深入协同过滤的核心</h1><p>前面作为背景知识，介绍了协同过滤的基本思想，这一节我们将深入分析协同过滤的原理，介绍基于协同过滤思想的多种推荐机制，优缺点和实用场景。</p>
+<p>首先，要实现协同过滤，需要一下几个步骤</p>
+<ul>
+<li>收集用户偏好</li>
+<li>找到相似的用户或物品</li>
+<li>计算推荐</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/07/23/Recommand_System_2/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -379,7 +450,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand System/">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io.git/2017/07/23/Recommand_System_1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Pan Wang">
@@ -398,7 +469,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/07/23/Recommand System/" itemprop="url">推荐系统初探（转+原）</a></h1>
+                <a class="post-title-link" href="/2017/07/23/Recommand_System_1/" itemprop="url">推荐系统初探（转+原）</a></h1>
         
 
         <div class="post-meta">
@@ -469,9 +540,11 @@
       
         
           <p>这一篇文章是对推荐系统的一个概述和总结，其中大部分内容来自 <a href="https://www.ibm.com/developerworks/cn/web/1103_zhaoct_recommstudy1/index.html#icomments" target="_blank" rel="external">探索推荐引擎内部的秘密</a> 。我的主要工作是对资料进行整理补充，形成一个更为完整的资料库。（PS.所有资料都是用来个人参考，并不会拿出来传播）</p>
+<h1 id="为什么需要推荐系统"><a href="#为什么需要推荐系统" class="headerlink" title="为什么需要推荐系统"></a>为什么需要推荐系统</h1><p>&emsp;&emsp;如今已经进入了一个数据爆炸的时代，随着 Web 2.0 的发展， Web 已经变成数据分享的平台，那么，如何让人们在海量的数据中想要找到他们需要的信息将变得越来越难。</p>
+<p>&emsp;&emsp;在这样的情形下，搜索引擎（Google，Bing，百度等等）成为大家快速找到目标信息的最好途径。在用户对自己需求相对明确的时候，用搜索引擎很方便的通过关键字搜索很快的找到自己需要的信息。但搜索引擎并不能完全满足用户对信息发现的需求，那是因为在很多情况下，用户其实并不明确自己的需要，或者他们的需求很难用简单的关键字来表述。又或者他们需要更加符合他们个人口味和喜好的结果，因此出现了推荐系统，与搜索引擎对应，大家也习惯称它为推荐引擎。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/07/23/Recommand System/#more" rel="contents">
+            <a class="btn" href="/2017/07/23/Recommand_System_1/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -771,6 +844,19 @@
   
 
 
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.1"></script>
 
 
 
