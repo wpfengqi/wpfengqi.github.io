@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络训练," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="激活函数SigmoidSigmoid 非线性函数将输入映射到 $ \left( 0,1\right) $ 之间。它的数学公式为：$$\sigma \left( x\right) =\dfrac {1} {1+e^{-x}}$$。">
+<meta name="keywords" content="网络训练">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络训练（一）">
+<meta property="og:url" content="http://wpfengqi.github.io/2017/08/21/Training_Network_1/index.html">
+<meta property="og:site_name" content="Mr.PanPan">
+<meta property="og:description" content="激活函数SigmoidSigmoid 非线性函数将输入映射到 $ \left( 0,1\right) $ 之间。它的数学公式为：$$\sigma \left( x\right) =\dfrac {1} {1+e^{-x}}$$。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://wpfengqi.github.io/images/sigmoid.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/tanh.gif">
+<meta property="og:image" content="http://wpfengqi.github.io/images/ReLU.jpeg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/ReLUtrain.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/LeakyReLU.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/Maxout.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/dataprocess.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/backpro.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/randominit.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/randombig.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/varsame.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/xavier.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/xavierReLU.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/xavierReLU2.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/BN.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/batnorlayer.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/coarse.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/finer.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/rsgs.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/vislr.png">
+<meta property="og:updated_time" content="2017-08-25T02:04:28.261Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经网络训练（一）">
+<meta name="twitter:description" content="激活函数SigmoidSigmoid 非线性函数将输入映射到 $ \left( 0,1\right) $ 之间。它的数学公式为：$$\sigma \left( x\right) =\dfrac {1} {1+e^{-x}}$$。">
+<meta name="twitter:image" content="http://wpfengqi.github.io/images/sigmoid.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'T5R0RZLTRY',
+      apiKey: 'fa15c76abc3a27e4b36dc3320badc0f7',
+      indexName: 'Blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wpfengqi.github.io/2017/08/21/Training_Network_1/"/>
+
+
+
+
+
+  <title>神经网络训练（一） | Mr.PanPan</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.PanPan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io/2017/08/21/Training_Network_1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Pan Wang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/tx.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.PanPan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">神经网络训练（一）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-21T16:00:18+08:00">
+                2017-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="激活函数"><a href="#激活函数" class="headerlink" title="激活函数"></a>激活函数</h1><h2 id="Sigmoid"><a href="#Sigmoid" class="headerlink" title="Sigmoid"></a>Sigmoid</h2><p>Sigmoid 非线性函数将输入映射到 $ \left( 0,1\right) $ 之间。它的数学公式为：$$\sigma \left( x\right) =\dfrac {1} {1+e^{-x}}$$。<br><a id="more"></a><br><img src="/images/sigmoid.png" alt="Sigmoid"><br>Sigmoid是比较常见的激活函数，但是最近它却不太受欢迎，主要有以下几个原因：</p>
+<ul>
+<li><strong> 函数饱和使梯度消失 </strong><br>Sigmoid容易饱和，并且当输入非常大或者非常小的时候，神经元的梯度就接近于0了，从图中可以看出梯度的趋势。这就使得我们在反向传播算法中反向传播接近于0的梯度，导致最终权重基本没什么更新，我们就无法递归地学习到输入数据了。另外，你需要尤其注意参数的初始值来尽量避免饱和的情况。如果你的初始值很大的话，大部分神经元可能都会处在饱和的状态而把梯度杀掉，这会导致网络变的很难学习。</li>
+<li><strong> Sigmoid的输出不是0均值 </strong><br>Sigmoid 的输出不是0均值的，这是我们不希望的，因为这会导致后层的神经元的输入是非0均值的信号，这会对梯度产生影响：假设后层神经元的输入都为正,那么对w求局部梯度则都为正(因为local gradient的值是x, 那么w更新的符号就取决于upstream gradient的符号)，这样在反向传播的过程中w要么都往正方向更新，要么都往负方向更新，导致有一种捆绑的效果，使得收敛缓慢。<br>当然了，如果你是按batch去训练，那么每个batch可能得到不同的符号（正或负），那么相加一下这个问题还是可以缓解。因此，非0均值这个问题虽然会产生一些不好的影响，不过跟上面提到的 kill gradients 问题相比还是要好很多的。</li>
+<li><strong> exp()计算费时 </strong><br>Sigmoid函数中的exp计算十分费时</li>
+</ul>
+<h2 id="tanh"><a href="#tanh" class="headerlink" title="tanh"></a>tanh</h2><p>tanh 函数同样存在饱和问题，但它的输出是零中心的，因此实际中 tanh 比 sigmoid 更受欢迎。tanh 函数实际上是一个放大的 sigmoid 函数，数学关系为：$$\tanh \left( x\right) =2\sigma \left( 2x\right) -1$$<br><img src="/images/tanh.gif" alt="tanh"> </p>
+<h2 id="ReLU"><a href="#ReLU" class="headerlink" title="ReLU"></a>ReLU</h2><p>ReLU 近些年来非常流行。它的数学公式为：$f\left( x\right) =\max \left( 0,x\right) $ 很显然，从上图左可以看出，输入信号 <0时，输出为0，>0时，输出等于输入。ReLU的优缺点如下：<br><img src="/images/ReLU.jpeg" alt="ReLU"> </0时，输出为0，></p>
+<ul>
+<li><strong>优点1</strong>：Krizhevsky et al. 发现使用 ReLU 得到的SGD的收敛速度会比 sigmoid/tanh 快很多(如下图)。有人说这是因为它是linear，而且梯度不会饱和</li>
+<li><strong>优点2</strong>：相比于 sigmoid/tanh需要计算指数等，计算复杂度高，ReLU 只需要一个阈值就可以得到激活值。</li>
+<li><strong>缺点1</strong>： ReLU在训练的时候很”脆弱”，一不小心有可能导致神经元”坏死”。举个例子：由于ReLU在x&lt;0时梯度为0，这样就导致负的梯度在这个ReLU被置零，而且这个神经元有可能再也不会被<strong>任何数据</strong>激活。如果这个情况发生了，那么这个神经元之后的梯度就永远是0了，也就是ReLU神经元坏死了，不再对任何数据有所响应。实际操作中，如果你的learning rate 很大，那么很有可能你网络中的10~20%的神经元都坏死了。 当然，如果你设置了一个合适的较小的learning rate，这个问题发生的情况其实也不会太频繁。(dead ReLU 的产生可能是由于较大的学习率使一个较大的梯度流过这个神经元，造成w减到很小，因此造成神经元输入取得负数的可能性较大)</li>
+<li><strong>缺点2</strong>：输出不是0均值的<br><img src="/images/ReLUtrain.jpg" alt="ReLUtrain"> </li>
+</ul>
+<h2 id="Leaky-ReLU"><a href="#Leaky-ReLU" class="headerlink" title="Leaky ReLU"></a>Leaky ReLU</h2><p>Leaky ReLUs 就是用来解决ReLU坏死的问题的。和ReLU不同，当x&lt;0时，它的值不再是0，而是一个较小斜率(如0.01等)的函数。它的数学公式为：$f\left( x\right) =\max \left( ax,x\right) $这样，既修正了数据分布，又保留了一些负轴的值，使得负轴信息不会全部丢失。关于Leaky ReLU 的效果，众说纷纭，没有清晰的定论。有些人做了实验发现 Leaky ReLU 表现的很好;有些实验则证明并不是这样。 </p>
+<ul>
+<li><p><strong>PReLU.</strong>对于 Leaky ReLU 中的a，通常都是通过先验知识人工赋值的。然而可以观察到，损失函数对a的导数我们是可以求得的，可不可以将它作为一个参数进行训练呢? Kaiming He 2015的论文《Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification》指出，不仅可以训练，而且效果更好。原文说使用了Parametric ReLU后，最终效果比不用提高了1.03%. </p>
+</li>
+<li><p><strong>Randomized Leaky ReLU. </strong> Randomized Leaky ReLU是 leaky ReLU 的random 版本, 其核心思想就是，在训练过程中，a是从一个高斯分布中随机出来的，然后再在测试过程中进行修正。<br><img src="/images/LeakyReLU.jpg" alt="LeakyReLU"> </p>
+</li>
+</ul>
+<h2 id="Maxout"><a href="#Maxout" class="headerlink" title="Maxout"></a>Maxout</h2><p>Maxout的形式是$f(x)=max(w_1^Tx+b_1,w_2^Tx+b_2)$，它最早出现在ICML2013上，作者Goodfellow将maxout和dropout结合后，号称在MNIST, CIFAR-10, CIFAR-100, SVHN这4个数据上都取得了start-of-art的识别率。可以看出ReLU 和 Leaky ReLU 都是Maxout的一个变形，所以Maxout 具有 ReLU 的优点（如：计算简单，不会 saturation），同时又没有 ReLU 的一些缺点 （如：容易饱和）。不过呢Maxout相当于把每个神经元的参数都double了，造成参数增多(一个神经元有两个w,两个b)。<br><img src="/images/Maxout.jpg" alt="Maxout"> </p>
+<h1 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h1><p>数据预处理的方法通常有三种，假设数据矩阵X是一个N*D维的矩阵，N表示样本数目，D表示数据的维度。</p>
+<h2 id="0均值"><a href="#0均值" class="headerlink" title="0均值"></a>0均值</h2><p>这是最常用的预处理方法，就是把数据的每一维-每一维的均值，这样数据就变成0均值的了。在numpy中，这个操作可以写成：X -= np.mean(X, axis = 0)。对于图片来讲，我们可以更简单地对所有pixel减去同一个均值（如 X -= np.mean(X)），当然也可以对RGB三个通道分别减均值。</p>
+<h2 id="归一化"><a href="#归一化" class="headerlink" title="归一化"></a>归一化</h2><p>这是指将数据归一化到相同的尺度。通常有两种归一化的方法。第一种是0均值以后的数据的每一维/每一维的标准差（X /= np.std(X, axis = 0)）；另一种是将数据归一化到每一维的最大最小值为1和-1。这种归一化只适用于当你认为数据的不同维度应该具有相同的重要性时。对于图片来说，不同像素的尺度是基本一致的（0-255），因此我们并不需要对它进行归一化操作。 </p>
+<h2 id="PCA和白化"><a href="#PCA和白化" class="headerlink" title="PCA和白化"></a>PCA和白化</h2><p>这是另一种形式的预处理方法。首先我们将数据变成0均值的，然后计算数据的协方差矩阵来得到数据不同维度之间的相关性：<br><img src="/images/dataprocess.jpg" alt="dataprocess"> </p>
+<h1 id="权重初始化"><a href="#权重初始化" class="headerlink" title="权重初始化"></a>权重初始化</h1><h2 id="全零初始化"><a href="#全零初始化" class="headerlink" title="全零初始化"></a>全零初始化</h2><p>首先说明下，初始权重不能全为0.经过适当的数据预处理之后我们可以合理的认为大约有一般的权重是正的另一半是负的，我们可能认为他的均值可能为0，但是绝对不能将其全部都设为0，严格来说不能把所有的权重都设置为相同的值，以前在反向传播中已经提到过，如果所有的权如下图：<br><img src="/images/backpro.jpg" alt="backpro"><br>那么所有的神经单元都会得到相同的结果，另外在求梯度时候得到的梯度也是全部都一样</p>
+<h2 id="小随机数"><a href="#小随机数" class="headerlink" title="小随机数"></a>小随机数</h2><p>如上所说，我们还是想让权重的接近于0，那么取一个很小的接近于0的随机数可以么？例如这样设置：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">W = <span class="number">0.01</span>* np.random.randn(D,H)</div></pre></td></tr></table></figure></p>
+<p>这样既满足各个初始值不一样又可以使其接近于零，但是这样还是不好，因为如果W很小那么每一层激活函数输入就会很小，输出也会很小，那么经过多层输入输出，就会产生如下图结果，方差接近于0，也就是说基本没有啥变化。再看梯度这个角度，local gradient跟X的大小有关，因此根据下图所示，X越来越小越接近于0，所以梯度也很小。<br>如一个10层每层500个单元的神经网络，初始化设置为W = 0.01* np.random.randn(D,H),激活函数为tanh，就会发现每层得到的激活值如下：<br><img src="/images/randominit.jpg" alt="randominit"> </p>
+<p>从上图可以看到后面基层激活值全部都成了0.毕竟w乘以x然后经过激活函数再经过乘以w得到的结果会越来越接近于0.梯度也会变的很小。 如果我们将其值变大些W = 1* np.random.randn(D,H)，会发生什么？<br>由于tanh的缺陷，趋向饱和，造成梯度消失，也就是下图所示，每个激活函数的输出都接近-1,1，那么每个激活函数的导数接近0。<br><img src="/images/randombig.jpg" alt="randombig"> </p>
+<h2 id="方差校准-Xavier初始化方法"><a href="#方差校准-Xavier初始化方法" class="headerlink" title="方差校准(Xavier初始化方法)"></a>方差校准(Xavier初始化方法)</h2><p>为了使得网络中信息更好的流动，每一层输出的方差应该尽量相等。基于这个目标，现在我们就去推导一下：每一层的权重应该满足哪种条件。经验告诉我们如果初始时每个单元的输出都有着相似的分布会使收敛速度增大。而上面使用随机的方式会使得各个单元的输出值的分布产生较大的变化，新假设使用线性激活函数，探究输入与输出的分布的关系。<br>首先我们设输入是x，xw的内积是s，现在看他们方差的关系：<br><img src="/images/varsame.png" alt="varsame"><br>其中我们设x和w均值相同为0且相互独立。得到的结果显示，如果希望s与输入变量x同分布就需要使w的方差为1/n,即：w = np.random.randn(n) / sqrt(n)这样设置之后每层输出值的均值、方差和分布如下：<br><img src="/images/xavier.jpg" alt="xavier"><br>这是在激活函数在tanh时，但是如果换做ReLU结果却成了下面的样子：<br><img src="/images/xavierReLU.jpg" alt="xavierReLU"><br>看出分布又不一样了。我们需要根据上面的过程做一个更加复杂的推导使各层的输出分布相似，最近的一篇文章 Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification by He et al 求探讨了ReLU的初始化应该<br>内容引用w = np.random.randn(n) * sqrt(2.0/n) 这样得到的分布是：<br><img src="/images/xavierReLU2.jpg" alt="xavierReLU2"> </p>
+<h2 id="稀疏初始化（Sparse-initialization）"><a href="#稀疏初始化（Sparse-initialization）" class="headerlink" title="稀疏初始化（Sparse initialization）"></a>稀疏初始化（Sparse initialization）</h2><p>另一个处理非标定方差的方法是将所有权重矩阵设为0，但是为了打破对称性，每个神经元都同下一层固定数目的神经元随机连接（其权重数值由一个小的高斯分布生成）。一个比较典型的连接数目是10个。</p>
+<h2 id="偏置（biases）的初始化"><a href="#偏置（biases）的初始化" class="headerlink" title="偏置（biases）的初始化"></a>偏置（biases）的初始化</h2><p>通常将偏置初始化为0，这是因为随机小数值权重矩阵已经打破了对称性。对于ReLU非线性激活函数，有研究人员喜欢使用如0.01这样的小数值常量作为所有偏置的初始值，这是因为他们认为这样做能让所有的ReLU单元一开始就激活，这样就能保存并传播一些梯度。然而，这样做是不是总是能提高算法性能并不清楚（有时候实验结果反而显示性能更差），所以通常还是使用0来初始化偏置参数。</p>
+<h2 id="推荐使用初始化方案"><a href="#推荐使用初始化方案" class="headerlink" title="推荐使用初始化方案"></a>推荐使用初始化方案</h2><p>当前的推荐是使用ReLU激活函数，并且使用w = np.random.randn(n) * sqrt(2.0/n)来进行权重初始化。</p>
+<h1 id="Batch-Normalization"><a href="#Batch-Normalization" class="headerlink" title="Batch Normalization"></a>Batch Normalization</h1><p>这是一种近期才出现的技术，提出者是Ioffe 和Szegedy，效果不错。它强制将激活值在训练前设置为高斯分布，他在全连接层和激活函数层中间插入了一层Batch Normalization层. 现在batch normalization的使用已经比较广泛了。<br>具体公式如下：<br>$$<br>\hat{x}^{(k)} = \frac{\hat{x}^{(k)}- E(\hat{x}^{(k)})}{\sqrt{Var{\hat{x}^{(k)}}}}<br>$$<br>但是作者又说如果简单的这么干，会降低层的表达能力。比如在使用sigmoid激活函数的时候，如果把数据限制到0均值单位方差，那么相当于只使用了激活函数中近似线性的部分，这显然会降低模型表达能力。 为此，作者又为BN增加了2个参数，用来保持模型的表达能力。这两个参数可以抵消这些BN的影响甚至完全还原回回来的x(因为我们希望X服从0,1正态分布，但是这个分布不一定是最佳的，所以加入这2个可学习参数来抵消影响)<br>于是最后的输出为： </p>
+<p>$$y^{(k)} = \gamma^{(k)}\hat{x}^{(k)} + \beta^{(k)}$$<br>上述公式中用到了均值E和方差Var，需要注意的是理想情况下E和Var应该是针对整个数据集的，但显然这是不现实的。因此，作者做了简化，用一个Batch的均值和方差作为对整个数据集均值和方差的估计。<br>整个BN的算法如下：<br><img src="/images/BN.jpg" alt="BN"><br>他具体放置的位置如下所示：<br><img src="/images/batnorlayer.png" alt="batnorlayer"></p>
+<p>具有以下优点： </p>
+<ol>
+<li>提高了梯度的传递性 </li>
+<li>可以允许更高的学习速率<br>这个解释可以参考sigmoid激活函数的缺点那一节。</li>
+<li>降低了对于初始值的依赖性 </li>
+<li>以regularization的形式起作用，可能稍微会对dropout的需求<br>用batch中的所有数据计算均值方差，因此对上述的x的变化操作是对x加了一定的约束（因为x变化后的取值不再仅仅取决于自己还依赖mini-batch中的其他元素）<br>另外，Batch normailization可以被理解为在每层之前做一下预处理, 但是却集成到了神经网络中去了。</li>
+<li>BN的本质其实是为了防止梯度弥散。在BN中，是通过将activation规范为均值和方差一致的手段使得原本会减小的activation的scale变大。</li>
+</ol>
+<h1 id="训练过程"><a href="#训练过程" class="headerlink" title="训练过程"></a>训练过程</h1><ul>
+<li>Step 1: 数据预处理（0均值和归一化）</li>
+<li>Step 2: 选择网络结构(多少层，多少隐藏神经元)</li>
+<li>Step 3: 先用少量数据跑几个epoch，看看loss是否在下降，acc是否在上升，如果不是需要思考一下网络初始化是否存在问题，还有loss function是否有问题</li>
+<li>Step 4: 如果第3步没有出现问题，那么我们就可以用整个数据集训练并调节参数。</li>
+</ul>
+<h1 id="参数优化"><a href="#参数优化" class="headerlink" title="参数优化"></a>参数优化</h1><p>调参的过程：举个例子，学习率。如果学习率过小，loss改变缓慢；如果学习率太大，loss会输出NaN。因此我们一般设置一个范围比如[1e-3 … 1e-5]进行搜索并通过交叉验证选择合适的值。<br>根据上述的例子，我们可以总结出一套调参的策略：首先选择超参的一个粗略取值范围，然后对这个范围内的取值进行抽样，用抽样的结果进行小规模训练，观察训练结果，如下图所示：<br><img src="/images/coarse.png" alt="coarse"><br>然后调整参数取值范围，进行更精细的搜索<br><img src="/images/finer.png" alt="finer"><br>这里同样存在一个问题，调整后的lr取值我们设定它的幂范围为(-3,-4)，但是观察上图，我们发现取到较好的准确率时lr的取值的幂都在-4,这意味着，我们并没有很好地探索lr的参数空间，也许-5,-6会取到更好的结果。<br>同时我们划定参数范围后，有以下两种策略进行抽样搜索，1.随机搜索 2.网格搜索<br><img src="/images/rsgs.png" alt="rsgs"><br>我们一般用随机搜索比较多一点。原因：观察上图，如果存在两个参数，一个参数比另一个参数更重要，如果按照网格搜索，我们取固定的几个值（图中3个），那么就如绿线所示，重要的参数的数量被限定死了。而随机搜索没有这个限定，因此重要参数的取值可以取到更多。<br>我们一般都是可视化我们的训练过程来判断我们取值的合理性。最后附上一张学习率的可视化图片：<br><img src="/images/vislr.png" alt="vislr"></p>
+<p>Stanford CS231N在线课程<br><a href="http://blog.csdn.net/u014365862/article/details/52710698" target="_blank" rel="external">http://blog.csdn.net/u014365862/article/details/52710698</a><br><a href="http://blog.csdn.net/elaine_bao/article/details/50889856" target="_blank" rel="external">http://blog.csdn.net/elaine_bao/article/details/50889856</a><br><a href="http://blog.csdn.net/bea_tree/article/details/51519844" target="_blank" rel="external">http://blog.csdn.net/bea_tree/article/details/51519844</a><br><a href="http://blog.csdn.net/bixiwen_liu/article/details/52956727" target="_blank" rel="external">http://blog.csdn.net/bixiwen_liu/article/details/52956727</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络训练/" rel="tag"># 网络训练</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/03/Linear_regression/" rel="next" title="线性回归">
+                <i class="fa fa-chevron-left"></i> 线性回归
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/22/Training-Network-2/" rel="prev" title="神经网络训练（二）">
+                神经网络训练（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/tx.jpg"
+               alt="Pan Wang" />
+          <p class="site-author-name" itemprop="name">Pan Wang</p>
+           
+              <p class="site-description motion-element" itemprop="description">Pan's Blog</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wpfengqi" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:147420436@qq.com" target="_blank" title="Mail">
+                  
+                    <i class="fa fa-fw fa-address-book-o"></i>
+                  
+                  Mail
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#激活函数"><span class="nav-number">1.</span> <span class="nav-text">激活函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Sigmoid"><span class="nav-number">1.1.</span> <span class="nav-text">Sigmoid</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tanh"><span class="nav-number">1.2.</span> <span class="nav-text">tanh</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ReLU"><span class="nav-number">1.3.</span> <span class="nav-text">ReLU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Leaky-ReLU"><span class="nav-number">1.4.</span> <span class="nav-text">Leaky ReLU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maxout"><span class="nav-number">1.5.</span> <span class="nav-text">Maxout</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据预处理"><span class="nav-number">2.</span> <span class="nav-text">数据预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0均值"><span class="nav-number">2.1.</span> <span class="nav-text">0均值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#归一化"><span class="nav-number">2.2.</span> <span class="nav-text">归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCA和白化"><span class="nav-number">2.3.</span> <span class="nav-text">PCA和白化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#权重初始化"><span class="nav-number">3.</span> <span class="nav-text">权重初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#全零初始化"><span class="nav-number">3.1.</span> <span class="nav-text">全零初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小随机数"><span class="nav-number">3.2.</span> <span class="nav-text">小随机数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方差校准-Xavier初始化方法"><span class="nav-number">3.3.</span> <span class="nav-text">方差校准(Xavier初始化方法)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#稀疏初始化（Sparse-initialization）"><span class="nav-number">3.4.</span> <span class="nav-text">稀疏初始化（Sparse initialization）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#偏置（biases）的初始化"><span class="nav-number">3.5.</span> <span class="nav-text">偏置（biases）的初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐使用初始化方案"><span class="nav-number">3.6.</span> <span class="nav-text">推荐使用初始化方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Batch-Normalization"><span class="nav-number">4.</span> <span class="nav-text">Batch Normalization</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#训练过程"><span class="nav-number">5.</span> <span class="nav-text">训练过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参数优化"><span class="nav-number">6.</span> <span class="nav-text">参数优化</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Pan Wang</span>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.1"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

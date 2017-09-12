@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="网络训练," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="优化方法以下内容来自知乎ycszen的文章(https://zhuanlan.zhihu.com/p/22252270) 和 CSDN中rookie_chenzhi的文章(http://blog.csdn.net/chenzhi1992/article/details/52850759) SGD（Mini-batch）的缺陷 假设在二维空间内，loss在一个方向减少十分快，在另一个方向减少特别慢，">
+<meta name="keywords" content="网络训练">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络训练（二）">
+<meta property="og:url" content="http://wpfengqi.github.io/2017/08/22/Training-Network-2/index.html">
+<meta property="og:site_name" content="Mr.PanPan">
+<meta property="og:description" content="优化方法以下内容来自知乎ycszen的文章(https://zhuanlan.zhihu.com/p/22252270) 和 CSDN中rookie_chenzhi的文章(http://blog.csdn.net/chenzhi1992/article/details/52850759) SGD（Mini-batch）的缺陷 假设在二维空间内，loss在一个方向减少十分快，在另一个方向减少特别慢，">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://wpfengqi.github.io/images/SGDprob.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/nesterov.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/yhfunc.gif">
+<meta property="og:image" content="http://wpfengqi.github.io/images/saddlefunc.gif">
+<meta property="og:image" content="http://wpfengqi.github.io/images/regularization.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/elasticnet.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/elasticnet1.jpg">
+<meta property="og:image" content="http://wpfengqi.github.io/images/dropout.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/dropoutt.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/bdropout.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/adropout.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/dptest.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/dpsummary.png">
+<meta property="og:image" content="http://wpfengqi.github.io/images/idropout.png">
+<meta property="og:updated_time" content="2017-08-24T07:26:05.126Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经网络训练（二）">
+<meta name="twitter:description" content="优化方法以下内容来自知乎ycszen的文章(https://zhuanlan.zhihu.com/p/22252270) 和 CSDN中rookie_chenzhi的文章(http://blog.csdn.net/chenzhi1992/article/details/52850759) SGD（Mini-batch）的缺陷 假设在二维空间内，loss在一个方向减少十分快，在另一个方向减少特别慢，">
+<meta name="twitter:image" content="http://wpfengqi.github.io/images/SGDprob.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'T5R0RZLTRY',
+      apiKey: 'fa15c76abc3a27e4b36dc3320badc0f7',
+      indexName: 'Blog',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wpfengqi.github.io/2017/08/22/Training-Network-2/"/>
+
+
+
+
+
+  <title>神经网络训练（二） | Mr.PanPan</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Mr.PanPan</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wpfengqi.github.io/2017/08/22/Training-Network-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Pan Wang">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/tx.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Mr.PanPan">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">神经网络训练（二）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-22T16:05:45+08:00">
+                2017-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/深度学习/" itemprop="url" rel="index">
+                    <span itemprop="name">深度学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h1><p>以下内容来自知乎ycszen的文章(<a href="https://zhuanlan.zhihu.com/p/22252270" target="_blank" rel="external">https://zhuanlan.zhihu.com/p/22252270</a>) 和 CSDN中rookie_chenzhi的文章(<a href="http://blog.csdn.net/chenzhi1992/article/details/52850759" target="_blank" rel="external">http://blog.csdn.net/chenzhi1992/article/details/52850759</a>)</p>
+<h2 id="SGD（Mini-batch）的缺陷"><a href="#SGD（Mini-batch）的缺陷" class="headerlink" title="SGD（Mini-batch）的缺陷"></a>SGD（Mini-batch）的缺陷</h2><ul>
+<li>假设在二维空间内，loss在一个方向减少十分快，在另一个方向减少特别慢，那么梯度下降过程会呈现一个Z字型（如下图所示，在陡方向上来回震荡，在平缓的方向上缓慢前进），因此会造成训练过程十分缓慢。如果推广到高维空间中，这种现象就更容易发生。<br><img src="/images/SGDprob.png" alt="SGDprob"> </li>
+</ul>
+<a id="more"></a>
+<ul>
+<li>SGD容易陷入局部最优（因为该点的梯度为0）。其次就是鞍点问题（一个光滑函数的鞍点邻域的曲线、曲面、或者超曲面，都位于这个点的切线的不同边，也就是说梯度为0）而且在高维空间中鞍点问题比局部最优问题更严重（一些方向loss向上，一些方向loss向下）。还有不只是鞍点，鞍点附近的点也存在很大的问题，因为鞍点附近邻域内的点梯度也很小，因此权重更新会非常的缓慢。</li>
+<li>SGD不能保证很好的收敛性，因为它并不是利用真正的梯度来更新权重，而是经常利用Mini-batch的梯度来作为真实梯度的一个估计值，因此可能需要更久的时间到极小值点。learning rate如果选择太小，收敛速度回很缓慢，如果太大，则会在极小值点附近震荡。</li>
+</ul>
+<h2 id="Momentum"><a href="#Momentum" class="headerlink" title="Momentum"></a>Momentum</h2><p>Momentum是模拟物理里动量的概念，积累之前的动量来替代真正的梯度。我们先来看看SGD的公式：<br>$$<br>\begin {aligned}<br>&amp;g_t = \nabla_{\theta_{t-1}}f(\theta_{t-1}) \\<br>&amp;\Delta\theta_t = -\eta \ast g_t<br>\end {aligned}<br>$$</p>
+<p>再来看看Momentum公式：</p>
+<p>$$<br>\begin {aligned}<br>&amp;m_t =  \mu * m_{t-1} + g_t  \\<br>&amp;\Delta\theta_t = -\eta \ast m_t<br>\end {aligned}<br>$$<br>其中，$\mu$是动量因子(一般取值0.9 or 0.99)</p>
+<p><strong>特点:</strong></p>
+<ul>
+<li>下降初期时，使用上一次参数更新，下降方向一致，乘上较大的$\mu$能够进行很好的加速</li>
+<li>下降中后期时，在局部最小值来回震荡的时候，$gradient\to0，\mu$使得更新幅度增大，跳出陷阱</li>
+<li>在梯度改变方向的时候，$\mu$能够减少更新 总而言之，momentum项能够在相关方向加速SGD，抑制振荡，从而加快收敛</li>
+</ul>
+<h2 id="Nesterov"><a href="#Nesterov" class="headerlink" title="Nesterov"></a>Nesterov</h2><p>nesterov项在梯度更新时做一个校正，避免前进太快，同时提高灵敏度。 将上一节中的公式展开可得：<br>$$\Delta\theta_t = -\eta \ast \mu \ast m_{t-1} -\eta \ast g_t$$<br>可以看出，$m_{t-1}$并没有直接改变当前梯度$g_t$，所以Nesterov的改进就是让之前的动量直接影响当前的动量。即：<br>$$<br>\begin {aligned}<br>&amp;g_t = \nabla_{\theta_{t-1}}f(\theta_{t-1} -\eta \ast \mu \ast m_{t-1}) \\<br>&amp;m_t =  \mu \ast m_{t-1} + g_t \\<br>&amp;\Delta\theta_t = -\eta \ast m_t<br>\end {aligned}<br>$$<br>所以，加上nesterov项后，梯度在大的跳跃后，进行计算对当前梯度进行校正。如下图：<br><img src="/images/nesterov.png" alt="nesterov"><br>momentum首先计算一个梯度(短的蓝色向量)，然后在加速更新梯度的方向进行一个大的跳跃(长的蓝色向量)，nesterov项首先在之前加速的梯度方向进行一个大的跳跃(棕色向量)，计算梯度然后进行校正(绿色梯向量)<br>其实，momentum项和nesterov项都是为了使梯度更新更加灵活，对不同情况有针对性。但是，人工设置一些学习率总还是有些生硬，接下来介绍几种自适应学习率的方法</p>
+<h2 id="Adagrad"><a href="#Adagrad" class="headerlink" title="Adagrad"></a>Adagrad</h2><p>Adagrad其实是对学习率进行了一个约束。即：<br>$$<br>\begin {aligned}<br>&amp;n_t=n_{t-1}+g_t^2 \\<br>&amp;\Delta{\theta_t}=-\frac{\eta}{\sqrt{n_t+\epsilon}} \ast g_t<br>\end {aligned}<br>$$<br>此处，对$g_t$从1到t进行一个递推形成一个约束项regularizer, $-\frac{1}{\sqrt{\sum_{r=1}^t (g_r)^2+\epsilon}}，\epsilon$用来保证分母非0</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>前期$g_t$较小的时候， regularizer较大，能够放大梯度</li>
+<li>后期$g_t$较大的时候，regularizer较小，能够约束梯度</li>
+<li>适合处理稀疏梯度</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>由公式可以看出，仍依赖于人工设置一个全局学习率</li>
+<li>$\eta$设置过大的话，会使regularizer过于敏感，对梯度的调节太大</li>
+<li>中后期，分母上梯度平方的累加将会越来越大，使$gradient\to0$，使得训练提前结束</li>
+</ul>
+<h2 id="Adadelta"><a href="#Adadelta" class="headerlink" title="Adadelta"></a>Adadelta</h2><p>Adadelta是对Adagrad的扩展，最初方案依然是对学习率进行自适应约束，但是进行了计算上的简化。 Adagrad会累加之前所有的梯度平方，而Adadelta只累加固定大小的项，并且也不直接存储这些项，仅仅是近似计算对应的平均值。即：<br>$$<br>\begin {aligned}<br>&amp;n_t=\nu \ast n_{t-1}+(1-\nu) \ast g_t^2 \\<br>&amp;\Delta{\theta_t} = -\frac{\eta}{\sqrt{n_t+\epsilon}} \ast g_t<br>\end {aligned}<br>$$<br>在此处Adadelta其实还是依赖于全局学习率的，但是作者做了一定处理，经过近似牛顿迭代法之后：<br>$$<br>\begin {aligned}<br> E|g^2|_t=\rho \ast E|g^2|_{t-1}+(1-\rho) \ast g_t^2 \\<br> \Delta{\theta_t}=-\frac{\sqrt{\sum_{r=1}^{t-1}\Delta{\theta_r}}}{\sqrt{E|g^2|_t+\epsilon}} \ast g_t<br> \end {aligned}<br> $$<br> 其中，E代表求期望。<br> 此时，可以看出Adadelta已经不用依赖于全局学习率了。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>训练初中期，加速效果不错，很快</li>
+<li>训练后期，反复在局部最小值附近抖动</li>
+</ul>
+<h2 id="RMSprop"><a href="#RMSprop" class="headerlink" title="RMSprop"></a>RMSprop</h2><p>RMSprop可以算作Adadelta的一个特例：<br>当$\rho=0.5$时，$E|g^2|_t=\rho \ast E|g^2|_{t-1}+(1-\rho) \ast g_t^2$就变为了求梯度平方和的平均数。<br>如果再求根的话，就变成了RMS(均方根)：<br>$$<br>RMS|g|_t=\sqrt{E|g^2|_t+\epsilon}<br>$$<br>此时，这个RMS就可以作为学习率$\eta$的一个约束：<br>$$<br>\Delta{\theta_t}=-\frac{\eta}{RMS|g|_t} \ast g_t<br>$$<br><strong>特点：</strong></p>
+<ul>
+<li>其实RMSprop依然依赖于全局学习率</li>
+<li>RMSprop算是Adagrad的一种发展，和Adadelta的变体，效果趋于二者之间</li>
+<li>适合处理非平稳目标 - 对于RNN效果很好</li>
+</ul>
+<h2 id="Adam"><a href="#Adam" class="headerlink" title="Adam"></a>Adam</h2><p>Adam(Adaptive Moment Estimation)本质上是带有动量项的RMSprop，它利用梯度的一阶矩估计和二阶矩估计动态调整每个参数的学习率。Adam的优点主要在于经过偏置校正后，每一次迭代学习率都有个确定范围，使得参数比较平稳。公式如下：<br>$$<br>\begin {aligned}<br>&amp;m_t=\mu \ast m_{t-1}+(1-\mu) \ast g_t \\<br>&amp;n_t=\nu \ast n_{t-1}+(1-\nu) \ast g_t^2 \\<br>&amp;\hat{m_t}=\frac{m_t}{1-\mu^t} \\<br>&amp;\hat{n_t}=\frac{n_t}{1-\nu^t} \\<br>&amp;\Delta{\theta_t}=-\frac{\hat{m_t}}{\sqrt{\hat{n_t}}+\epsilon} \ast \eta<br>\end {aligned}<br>$$<br>其中，$m_t，n_t$分别是对梯度的一阶矩估计和二阶矩估计，可以看作对期望$E|g_t|，E|g_t^2|$的估计；$\hat{m_t}，\hat{n_t}$是对$m_t，n_t$的校正，这样可以近似为对期望的无偏估计。 可以看出，直接对梯度的矩估计对内存没有额外的要求，而且可以根据梯度进行动态调整，而$-\frac{\hat{m_t}}{\sqrt{\hat{n_t}}+\epsilon}$对学习率形成一个动态约束，而且有明确的范围。</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>结合了Adagrad善于处理稀疏梯度和Momentum善于处理非平稳目标的优点</li>
+<li>对内存需求较小</li>
+<li>为不同的参数计算不同的自适应学习率</li>
+<li>也适用于大多非凸优化 - 适用于大数据集和高维空间</li>
+</ul>
+<h2 id="Adamax"><a href="#Adamax" class="headerlink" title="Adamax"></a>Adamax</h2><p>Adamax是Adam的一种变体，此方法对学习率的上限提供了一个更简单的范围。公式上的变化如下：<br>$$<br>\begin {aligned}<br>&amp;n_t=max(\nu*n_{t-1},|g_t|) \\<br>&amp;\Delta{x}=-\frac{\hat{m_t}}{n_t+\epsilon} \ast \eta<br>\end {aligned}<br>$$<br>可以看出，Adamax学习率的边界范围更简单</p>
+<h2 id="Nadam"><a href="#Nadam" class="headerlink" title="Nadam"></a>Nadam</h2><p>Nadam类似于带有Nesterov动量项的Adam。公式如下:<br>$$<br>\begin {aligned}<br>&amp;\hat{g_t}=\frac{g_t}{1-\Pi_{i=1}^t\mu_i} \\<br>&amp;m_t=\mu_t \ast m_{t-1}+(1-\mu_t) \ast g_t \\<br>&amp;\hat{m_t}=\frac{m_t}{1-\Pi_{i=1}^{t+1}\mu_i} \\<br>&amp;n_t=\nu \ast n_{t-1}+(1-\nu) \ast g_t^2 \\<br>&amp;\hat{n_t}=\frac{n_t}{1-\nu^t}\bar{m_t}=(1-\mu_t) \ast \hat{g_t}+\mu_{t+1} \ast \hat{m_t} \\<br>&amp;\Delta{\theta_t}=-\eta \ast \frac{\bar{m_t}}{\sqrt{\hat{n_t}}+\epsilon} \\<br>\end {aligned}<br>$$</p>
+<p>可以看出，Nadam对学习率有了更强的约束，同时对梯度的更新也有更直接的影响。一般而言，在想使用带动量的RMSprop，或者Adam的地方，大多可以使用Nadam取得更好的效果。</p>
+<h2 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h2><ul>
+<li>对于稀疏数据，尽量使用学习率可自适应的优化方法，不用手动调节，而且最好采用默认值</li>
+<li>SGD通常训练时间更长，但是在好的初始化和学习率调度方案的情况下，结果更可靠</li>
+<li>如果在意更快的收敛，并且需要训练较深较复杂的网络时，推荐使用学习率自适应的优化方法。</li>
+<li>Adadelta，RMSprop，Adam是比较相近的算法，在相似的情况下表现差不多。</li>
+<li>在想使用带动量的RMSprop，或者Adam的地方，大多可以使用Nadam取得更好的效果</li>
+</ul>
+<p>接下来展示几张图：<br>我们看到他们随着时间推移在损失表面的轮廓（contours of a loss surface）的移动。注意到Adagrad、Adadelta和RMSprop几乎立刻转向正确的方向并快速收敛，但是Momentum和NAG被引导偏离了轨道。这让我们感觉就像看滚下山的小球。然而，由于NAG拥有通过远眺所提高的警惕，它能够修正他的轨迹并转向极小值。<br><img src="/images/yhfunc.gif" alt="yhfunc"><br>下图展现了各种算法在saddle point上的表现。所谓saddle point也就是某个维度是positive slope，其他维度为negative lope。前文中我们已经提及了它给SGD所带来的困难。注意到SGD、Momentum和NAG很难打破对称，虽然后两者最后还是逃离了saddle point。然而Adagrad, RMSprop, and Adadelta很迅速地沿着negative slope下滑。<br><img src="/images/saddlefunc.gif" alt="saddlefunc"><br>正如我们所看到的，自适应学习速率的方法，即 Adagrad、 Adadelta、 RMSprop 和Adam，在这些场景下最合适并快速收敛。</p>
+<h1 id="模型集成"><a href="#模型集成" class="headerlink" title="模型集成"></a>模型集成</h1><p>Karpathy表示：使用Ensemble，可以得到2%的提升。<br>Ensemble就是训练多个模型，最后把各个模型的结果取均值。</p>
+<h1 id="正则化"><a href="#正则化" class="headerlink" title="正则化"></a>正则化</h1><h2 id="L1-L2-Elastic-Net-正则化"><a href="#L1-L2-Elastic-Net-正则化" class="headerlink" title="L1,L2,Elastic Net 正则化"></a>L1,L2,Elastic Net 正则化</h2><p>我们一般用如下几种正则化方式，具体内容请参考<strong><a href="http://blog.csdn.net/zouxy09/article/details/24971995/" target="_blank" rel="external">机器学习中的范数规则化之L0、L1与L2范数</a></strong><br><img src="/images/regularization.png" alt="regularization"><br>下面重点来说下<strong>弹性网络(Elastic Net):</strong> 实际上是L1,L2的综合：<br><img src="/images/elasticnet.jpg" alt="elasticnet"><br>其中的L1正则项产生稀疏模型<br>L2正则项产生以下几个作用：</p>
+<ol>
+<li>消除L1正则项中选择变量个数的限制（即稀疏性）</li>
+<li>产生grouping effect（对于一组相关性较强的原子，L1会在相关的变量间随机的选择一个来实现稀疏,L2会倾向选择多个）</li>
+<li>稳定L1正则项的路径<br><img src="/images/elasticnet1.jpg" alt="elasticnet1"><br>Elastic net总结：</li>
+<li>弹性网络同时进行正则化与变量选择</li>
+<li>能够进行grouped selection</li>
+<li>当p&gt;&gt;n(lasso 最多只能选择n个变量)，或者严重的多重共线性情况时，效果明显</li>
+<li>当α接近0时，elastic net表现接近lasso，但去掉了由极端相关引起的退化或者奇怪的表现</li>
+<li>当α从1变化到0时，目标函数的稀疏解（系数为0的情况）从0增加到lasso的稀疏解</li>
+</ol>
+<h2 id="Dropout"><a href="#Dropout" class="headerlink" title="Dropout"></a>Dropout</h2><p>部分内容来自雨石的博客<strong><a href="http://blog.csdn.net/stdcoutzyx/article/details/49022443" target="_blank" rel="external">理解dropout</a></strong><br><strong>什么是Dropout?</strong><br>Dropout是指在深度学习网络的训练过程中，对于神经网络单元，按照一定的概率将其暂时从网络中丢弃。注意是暂时，对于随机梯度下降来说，由于是随机丢弃，故而每一个mini-batch都在训练不同的网络。<br><strong>为什么要用Dropout?</strong><br>过拟合是很多机器学习的通病，过拟合了，得到的模型基本就废了。而为了解决过拟合问题，一般会采用ensemble方法，即训练多个模型做组合，此时，费时就成为一个大问题，不仅训练起来费时，测试起来多个模型也很费时。Dropout的出现很好的可以解决这个问题，每次做完dropout，相当于从原始的网络中找到一个更瘦的网络，如下图所示：<br><img src="/images/dropout.png" alt="dropout"><br>因而，对于一个有N个节点的神经网络，有了dropout后，就可以看做是$2^N$个模型的集合了，但此时要训练的参数数目却是不变的，这就解脱了费时的问题。<br><strong>怎么使用Dropout</strong></p>
+<ul>
+<li>训练层面<br>无可避免的，训练网络的每个单元要添加一道概率流程<br><img src="/images/dropoutt.png" alt="dropout"><br>对应的公式变化如下如下：<br>&emsp;&emsp;- 没有dropout的神经网络<br><img src="/images/bdropout.png" alt="dropout"><br>&emsp;&emsp;- 有dropout的神经网络<br><img src="/images/adropout.png" alt="dropout"> </li>
+<li>测试层面<br>因为训练层面dropout引入了一个概率，这样会造成网络存在一定的随机性，但是当我们需要测试时，我们不想要这个随机性（如果还存在这样的随机性，同样的测试样例进来，网络可能会给出不一致的结果），因此如下图所示，我们简单引入了期望。<br><img src="/images/dptest.png" alt="dropout"><br>只要在预测的时候，每一个单元的参数要预乘以p，那么我们就能得到上图的结果。整体代码如下图所示：<br><img src="/images/dpsummary.png" alt="dropout"><br>再介绍一下Inverted Dropout<br>与dropout稍微不同。该方法在训练阶段期间对激活值进行缩放，而测试阶段保持不变。由于测试阶段的模型是要放到线上，那么测试阶段最好涉及更少的计算，因此Inverted Dropout把测试阶段乘以p的操作转移到了训练阶段来执行。<br><img src="/images/idropout.png" alt="dropout"><br>注意一点：使用了dropout后，网络的训练速度会降低，因为每次仅能更新部分权重。</li>
+</ul>
+<h1 id="数据增强"><a href="#数据增强" class="headerlink" title="数据增强"></a>数据增强</h1><p>部分内容来自mitutao的博客<strong><a href="http://www.cnblogs.com/love6tao/p/5841648.html" target="_blank" rel="external">深度学习中的Data Augmentation方法（转）基于keras</a></strong><br>不同的任务背景下, 我们可以通过图像的几何变换, 使用以下一种或多种组合数据增强变换来增加输入数据的量. 这里具体的方法都来自数字图像处理的内容。</p>
+<ol>
+<li>旋转 | 反射变换(Rotation/reflection): 随机旋转图像一定角度; 改变图像内容的朝向;</li>
+<li>翻转变换(flip): 沿着水平或者垂直方向翻转图像;</li>
+<li>缩放变换(zoom): 按照一定的比例放大或者缩小图像;</li>
+<li>平移变换(shift): 在图像平面上对图像以一定方式进行平移; </li>
+<li>可以采用随机或人为定义的方式指定平移范围和平移步长, 沿水平或竖直方向进行平移. 改变图像内容的位置;</li>
+<li>尺度变换(scale): 对图像按照指定的尺度因子, 进行放大或缩小; 或者参照SIFT特征提取思想, 利用指定的尺度因子对图像滤波构造尺度空间. 改变图像内容的大小或模糊程度;</li>
+<li>对比度变换(contrast): 在图像的HSV颜色空间，改变饱和度S和V亮度分量，保持色调H不变. 对每个像素的S和V分量进行指数运算(指数因子在0.25到4之间), 增加光照变化;</li>
+<li>噪声扰动(noise): 对图像的每个像素RGB进行随机扰动, 常用的噪声模式是椒盐噪声和高斯噪声;</li>
+<li>颜色变换(color): 在训练集像素值的RGB颜色空间进行PCA, 得到RGB空间的3个主方向向量,3个特征值, p1, p2, p3, λ1, λ2, λ3. 对每幅图像的每个像素$Ixy=[IRxy,IGxy,IBxy]^T$进行加上如下的变化: $ [p1,p2,p3][α1λ1,α2λ2,α3λ3]^T$ 其中:αi是满足均值为0,方差为0.1的随机变量。</li>
+</ol>
+<h1 id="文献引用"><a href="#文献引用" class="headerlink" title="文献引用"></a>文献引用</h1><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/22252270" target="_blank" rel="external">深度学习最全优化方法总结比较（SGD，Adagrad，Adadelta，Adam，Adamax，Nadam)</a></li>
+<li><a href="http://blog.csdn.net/chenzhi1992/article/details/52850759" target="_blank" rel="external">各种梯度优化算法介绍（SGD Loss剧烈波动</a></li>
+<li><a href="http://blog.csdn.net/zouxy09/article/details/24971995/" target="_blank" rel="external">机器学习中的范数规则化之L0、L1与L2范数</a></li>
+<li><a href="http://blog.csdn.net/stdcoutzyx/article/details/49022443" target="_blank" rel="external">理解dropout</a></li>
+<li><a href="http://www.cnblogs.com/love6tao/p/5841648.html" target="_blank" rel="external">深度学习中的Data Augmentation方法（转）基于keras</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/网络训练/" rel="tag"># 网络训练</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/21/Training_Network_1/" rel="next" title="神经网络训练（一）">
+                <i class="fa fa-chevron-left"></i> 神经网络训练（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/25/CNN-Architectures/" rel="prev" title="CNN框架">
+                CNN框架 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/tx.jpg"
+               alt="Pan Wang" />
+          <p class="site-author-name" itemprop="name">Pan Wang</p>
+           
+              <p class="site-description motion-element" itemprop="description">Pan's Blog</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wpfengqi" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="mailto:147420436@qq.com" target="_blank" title="Mail">
+                  
+                    <i class="fa fa-fw fa-address-book-o"></i>
+                  
+                  Mail
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#优化方法"><span class="nav-number">1.</span> <span class="nav-text">优化方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#SGD（Mini-batch）的缺陷"><span class="nav-number">1.1.</span> <span class="nav-text">SGD（Mini-batch）的缺陷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Momentum"><span class="nav-number">1.2.</span> <span class="nav-text">Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nesterov"><span class="nav-number">1.3.</span> <span class="nav-text">Nesterov</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adagrad"><span class="nav-number">1.4.</span> <span class="nav-text">Adagrad</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adadelta"><span class="nav-number">1.5.</span> <span class="nav-text">Adadelta</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RMSprop"><span class="nav-number">1.6.</span> <span class="nav-text">RMSprop</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adam"><span class="nav-number">1.7.</span> <span class="nav-text">Adam</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adamax"><span class="nav-number">1.8.</span> <span class="nav-text">Adamax</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nadam"><span class="nav-number">1.9.</span> <span class="nav-text">Nadam</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何选择"><span class="nav-number">1.10.</span> <span class="nav-text">如何选择</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型集成"><span class="nav-number">2.</span> <span class="nav-text">模型集成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#正则化"><span class="nav-number">3.</span> <span class="nav-text">正则化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#L1-L2-Elastic-Net-正则化"><span class="nav-number">3.1.</span> <span class="nav-text">L1,L2,Elastic Net 正则化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dropout"><span class="nav-number">3.2.</span> <span class="nav-text">Dropout</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据增强"><span class="nav-number">4.</span> <span class="nav-text">数据增强</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#文献引用"><span class="nav-number">5.</span> <span class="nav-text">文献引用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Pan Wang</span>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.1"></script>
+
+
+
+  
+
+  
+
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
